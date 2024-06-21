@@ -1,0 +1,74 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.0'
+    id 'io.spring.dependency-management' version '1.1.5'
+}
+
+group = 'org.sparta'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'io.github.cdimascio:java-dotenv:5.2.2'
+    // Spring Boot Actuator: 모니터링 및 관리 엔드포인트 제공
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // Spring Data JPA: JPA와 Hibernate를 사용한 데이터베이스 상호작용
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // Spring Security: 인증 및 인가
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // Spring Boot Starter Thymeleaf: 서버 측 렌더링을 위한 Thymeleaf 템플릿 사용
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    // Spring Boot Starter Web: 웹 애플리케이션 및 RESTful 서비스 구축
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // Thymeleaf Extras Spring Security6: Thymeleaf 템플릿에서 Spring Security 통합
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+
+    // Lombok: 보일러플레이트 코드를 줄이기 위한 라이브러리 (컴파일 타임 전용)
+    compileOnly 'org.projectlombok:lombok'
+
+    // Spring Boot DevTools: 개발 중 자동 재시작 및 라이브 리로드
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // Spring Boot Docker Compose: Docker Compose 기반 서비스 관리를 위한 도구
+    developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
+
+    // MySQL JDBC 드라이버: MySQL 데이터베이스와의 연결
+    implementation 'mysql:mysql-connector-java:8.0.26' // MySQL JDBC 드라이버 추가
+//    implementation 'com.mysql:mysql-connector-j' // MySQL JDBC 드라이버 추가
+
+    // Lombok 애노테이션 프로세서
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // Spring Boot Starter Test: 테스트를 위한 의존성 모음 (JUnit, Mockito 등 포함)
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // Spring Security Test: Spring Security를 위한 테스트 지원
+    testImplementation 'org.springframework.security:spring-security-test'
+
+    // JUnit Platform Launcher: JUnit 플랫폼에서 테스트 실행을 위한 런처
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
