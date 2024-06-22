@@ -24,9 +24,13 @@ repositories {
 }
 
 dependencies {
-    implementation 'io.github.cdimascio:java-dotenv:5.2.2'
+    //redis 설정
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
     // Spring Boot Actuator: 모니터링 및 관리 엔드포인트 제공
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    implementation 'io.github.cdimascio:java-dotenv:5.2.2'
 
     // Spring Data JPA: JPA와 Hibernate를 사용한 데이터베이스 상호작용
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'

@@ -6,6 +6,8 @@ build/
 !**/src/test/**/build/
 src/main/resources/.env
 /db-data/**
+/app-data/**
+/redis-data/**
 application.properties
 .env
 

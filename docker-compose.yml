@@ -2,12 +2,16 @@ version: '3.8'
 
 services:
   app:
-    image: view-app:latest #추가 된 부분
-    container_name: View   #추가 된 부분
+    image: view-app:latest
+    container_name: View
+    build:
+      context: .
+      dockerfile: ./Dockerfile
     ports:
       - "8080:8080"
     depends_on:
       - db
+      - redis
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${DB_NAME}
       SPRING_DATASOURCE_USERNAME: ${DB_USER}
@@ -17,11 +21,15 @@ services:
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - app-network
+    volumes:
+      - ./app-data:/app-data
 
   db:
     restart: always
     image: mysql:8
-    container_name: mysql #추가 된 부분
+    container_name: mysql
     ports:
       - "${DB_PORT}:3306"
     environment:
@@ -31,3 +39,24 @@ services:
       MYSQL_PASSWORD: ${DB_PASSWORD}
     volumes:
       - ./db-data:/var/lib/mysql
+    networks:
+      - app-network
+
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - "${Redis_PORT}:6379"
+    volumes:
+      - ./redis-data:/data
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db-data:
+  redis-data:
+  app-data:
