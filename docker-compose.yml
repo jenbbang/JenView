@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   app:
-    image: view-app:latest
+    image: wodms4372/view-app:latest
     container_name: View
     build:
       context: .
