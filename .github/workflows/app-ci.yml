@@ -18,6 +18,12 @@ jobs:
           distribution: 'zulu'
           java-version: '21'
 
+      - name: make .env
+        run: |
+          touch .env
+          echo "${{ secrets.ENV }}" >> ./.env
+        shell: bash
+
       - name: make application.properties
         run: |
           mkdir -p ./src/main/resources
