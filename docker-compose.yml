@@ -26,6 +26,14 @@ services:
     volumes:
       - ./app-data:/app-data
 
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - 80:80
+    depends_on:
+      - web
+
   db:
     restart: always
     image: mysql:8
