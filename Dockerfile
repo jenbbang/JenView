@@ -5,7 +5,7 @@ FROM openjdk:21-jdk
 WORKDIR /app
 
 # JAR 파일을 복사합니다.
-COPY build/libs/JenView-0.0.1-SNAPSHOT.jar app.jar
+COPY build/libs/${JAR_FILE}.jar app.jar
 
 # 애플리케이션 포트를 노출합니다.
 EXPOSE 8080
