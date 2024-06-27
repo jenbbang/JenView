@@ -1,12 +1,12 @@
 package org.sparta.jenview.repository;
 
-import org.sparta.jenview.entity.Users;
+import org.sparta.jenview.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserRepository extends JpaRepository<Users, Long> {
+public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
-    Users findByUsername(String username);
-    Users findByEmail(String email);
+    UserEntity findByUsername(String username);
+    UserEntity findByEmail(String email);
 }

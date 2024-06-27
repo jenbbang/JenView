@@ -5,24 +5,28 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import lombok.Getter;
+
+import org.sparta.jenview.dto.UserDTO;
+import org.sparta.jenview.entity.UserEntity;
+import org.sparta.jenview.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.List;
 
 @Component
 public class JWTUtil {
 
-    @Getter
-    private final long expirationTime;
     private Key key;
 
-    public JWTUtil(@Value("${spring.jwt.secret}") String secret, @Value("${spring.jwt.expiration}") long expirationTime) {
+    public JWTUtil(@Value("${spring.jwt.secret}") String secret) {
+
+
         byte[] byteSecretKey = Decoders.BASE64.decode(secret);
         key = Keys.hmacShaKeyFor(byteSecretKey);
-        this.expirationTime = expirationTime;
     }
 
     public String getUsername(String token) {
@@ -35,12 +39,9 @@ public class JWTUtil {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().get("role", String.class);
     }
 
-    public Boolean isExpired(String token) {
 
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getExpiration().before(new Date());
-    }
+    public String createJwt(String username, String role, Long expiredMs) {
 
-    public String createJwt(String username, String role) {
         Claims claims = Jwts.claims();
         claims.put("username", username);
         claims.put("role", role);
@@ -48,11 +49,12 @@ public class JWTUtil {
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
+                .setExpiration(new Date(System.currentTimeMillis() + expiredMs))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
-    public long getExpirationTime() {
-        return expirationTime;
+
+    public boolean isExpired(String token) {
+        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getExpiration().before(new Date());
     }
 }
