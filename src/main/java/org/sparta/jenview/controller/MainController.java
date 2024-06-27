@@ -36,7 +36,7 @@ public class MainController {
 //    }
     @GetMapping("/login")
     public String loginAPI(HttpServletResponse response) {
-        String token = jwtUtil.createJwt("user", "ROLE_USER");
+        String token = jwtUtil.createJwt("SELLER", "ROLE_SELLER");
         Cookie cookie = createCookie("JWT", token);
         response.addCookie(cookie);
         return "로그인 성공했습니다.";
