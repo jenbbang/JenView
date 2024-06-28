@@ -12,7 +12,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -55,14 +58,22 @@ public class UserController {
     }
 
     @GetMapping("/userinfo/{id}")
-    public ResponseEntity<String> getUserInfo(@PathVariable Long id) {
+    public ResponseEntity<List<UserDTO>> getUserInfo(@PathVariable Long id) {
         UserDTO userDTO = userService.getUserInfo(id);
-        return ResponseEntity.ok(userDTO.toString());
+        return ResponseEntity.ok(Collections.singletonList(userDTO));
     }
 
     @GetMapping("/logoutsuccess")
     public String logoutsuccess() {
         return "로그아웃 되었습니다.";
     }
+    @DeleteMapping("/user/{id}")
+    public ResponseEntity<Map<String, Object>> deleteByUserId(@PathVariable Long id) {
+        userService.deleteUser(id);
+        Map<String, Object>response = new LinkedHashMap<>();
+        response.put("user_id", id);
+        response.put("msg", "유저 삭제가 삭제 되었습니다.");
+        return ResponseEntity.ok(response);
 
+    }
 }

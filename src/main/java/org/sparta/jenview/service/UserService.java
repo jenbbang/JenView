@@ -36,7 +36,10 @@ public class UserService {
         UserEntity userEntity = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with id " + id));
         return UserDTO(userEntity);
-
+    }
+    //유저 삭제
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
 
     }
 

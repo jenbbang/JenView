@@ -5,7 +5,6 @@ import org.sparta.jenview.entity.VideoEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -19,7 +18,8 @@ public interface VideoRepository extends JpaRepository<VideoEntity, Long> {
     @Transactional
     @Modifying
     @Query("DELETE FROM VideoEntity v WHERE v.id = :videoId")
-    void deleteByVideoId(@Param("videoId") Long videoId);
+    void deleteByVideoId(Long videoId);
+
 
 }
 

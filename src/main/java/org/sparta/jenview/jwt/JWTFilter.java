@@ -23,9 +23,17 @@ public class JWTFilter extends OncePerRequestFilter {
 
         this.jwtUtil = jwtUtil;
     }
+    //처음로그인떄 JWT 확인아하도록 설정
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+        // 로그인 경로를 제외하도록 설정
+        return path.startsWith("/api/login");
+    }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
 
         //cookie들을 불러온 뒤 Authorization Key에 담긴 쿠키를 찾음
         String authorization = null;
@@ -34,7 +42,6 @@ public class JWTFilter extends OncePerRequestFilter {
 
             System.out.println("cookie name : "+cookie.getName());
             if (cookie.getName().equals("권한이 부여되었습니다.")) {
-
                 authorization = cookie.getValue();
             }
         }

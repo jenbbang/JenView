@@ -7,8 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 
 @RestController
 @RequestMapping("/api/videos")
@@ -22,11 +24,23 @@ public class VideoController {
         this.videoService = videoService;
     }
 
-    // 새로운 비디오를 생성
+    // 새로운 비디오를 생성하고 생성된 비디오의 ID와 메시지를 반환
     @PostMapping
-    public ResponseEntity<Void> createVideo(@RequestBody VideoDTO videoDTO) {
-        videoService.createVideo(videoDTO);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Map<String, Object>> createVideo(@RequestBody VideoDTO videoDTO) {
+        Long videoId = videoService.createVideo(videoDTO);
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("user_id", videoDTO.getUserId());
+        response.put("videoId", videoId);
+        response.put("title", videoDTO.getTitle());
+        response.put("description", videoDTO.getDescription());
+        response.put("duration", videoDTO.getDuration());
+        response.put("view_count", videoDTO.getViewCount());
+        response.put("play_time", videoDTO.getPlayTime());
+        response.put("msg", "비디오가 생성되었습니다. ");
+
+        return ResponseEntity.ok(response);
+
     }
 
     // 모든 비디오 정보를 가져옴
@@ -45,34 +59,37 @@ public class VideoController {
 
     // 특정 ID의 비디오 정보를 업데이트
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateVideo(@PathVariable Long id, @RequestBody VideoDTO videoDTO) {
+    public ResponseEntity<Map<String, Object>> updateVideo(@PathVariable Long id, @RequestBody VideoDTO videoDTO) {
         videoService.updateVideo(id, videoDTO);
-        return ResponseEntity.ok().build();
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("videoId", id);
+        response.put("title", videoDTO.getTitle());
+        response.put("description", videoDTO.getDescription());
+        response.put("duration", videoDTO.getDuration());
+        response.put("view_count", videoDTO.getViewCount());
+        response.put("play_time", videoDTO.getPlayTime());
+        response.put("msg", "비디오가 업데이트됩니다. ");
+        return ResponseEntity.ok(response);
     }
 
     // 특정 User_ID의 비디오를 삭제
     @DeleteMapping("/user/{userId}")
-    public ResponseEntity<Map<String, String>> deleteVideosByUserId(@PathVariable Long userId) {
+    public ResponseEntity<Map<String, Object>> deleteVideosByUserId(@PathVariable Long userId) {
         videoService.deleteVideosByUserId(userId);
-        Map<String, String> response = new HashMap<>();
-        response.put("msg", "삭제완료");
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("userId", userId);
+        response.put("msg", "비디오가 전체 삭제 완료 되었습니다.");
         return ResponseEntity.ok(response);
     }
 
     //video_id로 특정 비디오를 삭제
     @DeleteMapping("/{VideoId}")
-    public ResponseEntity<Map<String, String>> deleteVideosByVideoId(@PathVariable Long VideoId) {
+    public ResponseEntity<Map<String, Object>> deleteVideosByVideoId(@PathVariable Long VideoId) {
         videoService.deleteVideosByVideoId(VideoId);
-        Map<String, String> response = new HashMap<>();
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("VideoId", VideoId);
         response.put("msg", "삭제완료");
         return ResponseEntity.ok(response);
     }
-
-    //제목에 따라서 삭제
-//    @DeleteMapping("/by-title")
-//    public ResponseEntity<String> deleteVideoByTitle(@RequestParam String title) {
-//        videoService.deleteVideoByTitle(title);
-//        return ResponseEntity.ok("{\"msg\": \"삭제완료\"}");
-//    }
 
 }
