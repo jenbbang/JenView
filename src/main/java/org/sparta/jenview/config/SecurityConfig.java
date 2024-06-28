@@ -77,12 +77,9 @@ public class SecurityConfig {
         //HTTP Basic 인증 방식 disable
         http.httpBasic((auth) -> auth.disable());
 
-        //JWTFilter 추가
-        http.addFilterAfter(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class);
 
-
-//        //BlacklistFilter 추가
-//        http.addFilterBefore(blacklistFilter, JWTFilter.class);
+//        BlacklistFilter 추가
+//        http.addFilterBefore(blacklistFilter, UsernamePasswordAuthenticationFilter.class);
 
         //oauth2
         http.oauth2Login((oauth2) -> oauth2
@@ -90,6 +87,13 @@ public class SecurityConfig {
                         .userService(customOAuth2UserService))
                 .successHandler(customSuccessHandler)
         );
+
+        //JWTFilter 추가
+        http.addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+
+        //JWTFilter 추가
+        http.addFilterAfter(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class);
+
 
         //경로별 인가 작업
         http.authorizeHttpRequests((auth) -> auth
