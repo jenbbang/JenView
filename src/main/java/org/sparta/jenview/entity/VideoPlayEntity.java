@@ -1,5 +1,6 @@
 package org.sparta.jenview.entity;
 
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,8 +14,9 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "videos")
-public class VideoEntity {
+@Table(name = "video_plays")
+public class VideoPlayEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -24,14 +26,15 @@ public class VideoEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity userEntity;
 
-    @Column(name = "title", nullable = false, length = 255)
-    private String title;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "video_id", nullable = false)
+    private VideoEntity videoEntity;
 
-    @Column(name = "description")
-    private String description;
+    @Column(name = "last_played_at", nullable = false)
+    private LocalDateTime lastPlayedAt;
 
-    @Column(name = "duration", nullable = false)
-    private int duration;
+    @Column(name = "last_played_time", nullable = false)
+    private Long lastPlayedTime;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -41,9 +44,5 @@ public class VideoEntity {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "view_count", nullable = false)
-    private int viewCount;
 
-    @Column(name = "play_time", nullable = false)
-    private long playTime;
 }

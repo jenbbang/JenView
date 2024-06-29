@@ -15,10 +15,8 @@ import java.util.stream.Collectors;
 @Service
 public class VideoService {
 
-    @Autowired
-    private VideoRepository videoRepository;
-
-    private UserRepository userRepository;
+    private final VideoRepository videoRepository;
+    private final UserRepository userRepository;
 
     @Autowired
     public VideoService(VideoRepository videoRepository, UserRepository userRepository) {
@@ -33,7 +31,7 @@ public class VideoService {
         videoDTO.setDescription(videoEntity.getDescription());
         videoDTO.setDuration(videoEntity.getDuration());
         videoDTO.setViewCount(videoEntity.getViewCount());
-        videoDTO.setPlayTime(videoEntity.getPlayTime());
+        videoDTO.setPlayTime((int) videoEntity.getPlayTime());
         videoDTO.setUserId(videoEntity.getUserEntity().getId()); // userId 설정
         return videoDTO;
     }
