@@ -9,7 +9,7 @@ public class VideoPlayDTO {
 
     private Long userId;
     private Long videoId;
-    private Long last_played_time;
+    private Long lastPlayedTime;
 
 
 }
