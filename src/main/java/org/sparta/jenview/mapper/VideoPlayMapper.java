@@ -7,32 +7,24 @@ import org.sparta.jenview.entity.VideoPlayEntity;
 import org.springframework.stereotype.Component;
 
 @Component
-public class VideoPlayMapper implements MapperInterface<VideoPlayDTO, VideoPlayEntity> {
+public class VideoPlayMapper {
 
-    // to DTOVideoPlayDTO
     public VideoPlayDTO toDTO(VideoPlayEntity videoPlayEntity) {
         VideoPlayDTO videoPlayDTO = new VideoPlayDTO();
-//        videoPlayDTO.setId(videoPlayEntity.getId());
-        videoPlayDTO.setUserId(videoPlayEntity.getUserEntity().getId());
+        videoPlayDTO.setId(videoPlayEntity.getId());
         videoPlayDTO.setVideoId(videoPlayEntity.getVideoEntity().getId());
-//        videoPlayDTO.setLastPlayedAt(videoPlayEntity.getLastPlayedAt());
-        videoPlayDTO.setLastPlayedTime(videoPlayEntity.getLastPlayedTime());
+        videoPlayDTO.setUserId(videoPlayEntity.getUserEntity().getId());
+        videoPlayDTO.setStopTime(videoPlayEntity.getStopTime());
         return videoPlayDTO;
     }
 
-    @Override
-    public VideoPlayEntity toEntity(VideoPlayDTO videoPlayDTO) {
-        throw new UnsupportedOperationException("이 메서드는 지원되지 않습니다. 대신 toEntity(VideoPlayDTO, UserEntity, VideoEntity)를 사용하세요.");
-    }
-
-
-    // to Entity
     public VideoPlayEntity toEntity(VideoPlayDTO videoPlayDTO, UserEntity userEntity, VideoEntity videoEntity) {
         VideoPlayEntity videoPlayEntity = new VideoPlayEntity();
-        videoPlayEntity.setUserEntity(userEntity);
+        videoPlayEntity.setId(videoPlayDTO.getId());
         videoPlayEntity.setVideoEntity(videoEntity);
-//        videoPlayEntity.setLastPlayedAt(videoPlayDTO.getLastPlayedAt());
-        videoPlayEntity.setLastPlayedTime(videoPlayDTO.getLastPlayedTime());
+        videoPlayEntity.setUserEntity(userEntity);
+        videoPlayEntity.setStopTime(videoPlayDTO.getStopTime());
         return videoPlayEntity;
     }
+
 }

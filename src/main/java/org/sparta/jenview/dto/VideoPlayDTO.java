@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 public class VideoPlayDTO {
 
+    private Long id;
     private Long userId;
     private Long videoId;
     private int lastPlayedTime;

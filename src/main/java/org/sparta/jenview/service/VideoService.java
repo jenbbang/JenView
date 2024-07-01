@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -25,9 +26,11 @@ public class VideoService {
     private final VideoMapper videoMapper;
     private final VideoPlayRepository videoPlayRepository;
     private final VideoPlayMapper videoPlayMapper;
+    private final VideoPlayService videoPlayService;
 
     @Autowired
-    public VideoService(VideoRepository videoRepository, UserRepository userRepository, VideoMapper videoMapper, VideoPlayRepository videoPlayRepository, VideoPlayMapper videoPlayMapper) {
+    public VideoService(VideoRepository videoRepository, UserRepository userRepository, VideoMapper videoMapper, VideoPlayRepository videoPlayRepository, VideoPlayMapper videoPlayMapper, VideoPlayService videoPlayService) {
+        this.videoPlayService = videoPlayService;
         this.videoRepository = videoRepository;
         this.userRepository = userRepository;
         this.videoMapper = videoMapper;
@@ -90,14 +93,49 @@ public class VideoService {
         videoRepository.deleteByVideoId(videoId);
     }
 
-    //비디오 재생
+    // 비디오 재생
     @Transactional
-    public void incrementViewCount(Long VideoId) {
-        VideoEntity videoEntity = videoRepository.findById(VideoId)
+    public void playVideo(Long videoId, Long userId, int watchedDuration) {
+        VideoEntity videoEntity = videoRepository.findById(videoId)
                 .orElseThrow(() -> new RuntimeException("비디오를 찾을 수 없습니다."));
-        videoEntity.setViewCount(videoEntity.getViewCount() + 1);
+        UserEntity userEntity = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
+        List<VideoPlayEntity> videoPlayEntities = videoPlayRepository.findByVideoEntity_IdAndUserEntity_Id(videoId, userId);
+        VideoPlayEntity videoPlayEntity;
+
+        if (videoPlayEntities.isEmpty()) {
+            videoPlayEntity = new VideoPlayEntity();
+            videoPlayEntity.setVideoEntity(videoEntity);
+            videoPlayEntity.setUserEntity(userEntity);
+            videoPlayEntity.setStopTime(0); // 기본값 설정
+            videoPlayEntity.setLastPlayedAt(LocalDateTime.now()); // 마지막 재생 시간 설정
+            videoEntity.setViewCount(videoEntity.getViewCount() + 1); // 조회수 증가
+        } else {
+            videoPlayEntity = videoPlayEntities.get(0);
+            LocalDateTime lastPlayedAt = videoPlayEntity.getLastPlayedAt();
+            LocalDateTime now = LocalDateTime.now();
+
+            // 30초 이내의 재생은 어뷰징으로 간주하여 조회수 증가 및 시청 횟수 증가를 막음
+            if (lastPlayedAt != null && ChronoUnit.SECONDS.between(lastPlayedAt, now) < 30) {
+                return;
+            }
+
+            videoPlayEntity.setLastPlayedAt(now); // 마지막 재생 시간 업데이트
+        }
+
+        // 현재까지 시청한 시간을 업데이트
+        int newPlayTime = videoPlayEntity.getStopTime() + watchedDuration;
+        if (newPlayTime > videoEntity.getDuration()) {
+            newPlayTime = videoEntity.getDuration();
+        }
+        videoPlayEntity.setStopTime(newPlayTime);
 
         videoRepository.save(videoEntity);
+        videoPlayRepository.save(videoPlayEntity);
+
+        // 광고 시청 횟수 증가
+        videoPlayService.incrementAdViewCountsForVideo(videoId, newPlayTime);
     }
 
     @Transactional
@@ -118,7 +156,7 @@ public class VideoService {
                 .orElseThrow(() -> new RuntimeException("Video not found with id " + id));
     }
 
-    //비디오 정지
+    // 비디오 정지
     @Transactional
     public void stopVideo(VideoPlayDTO videoStopDTO) {
         Long videoId = videoStopDTO.getVideoId();
@@ -134,7 +172,10 @@ public class VideoService {
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
         // 비디오 엔티티의 플레이 타임을 증가시킵니다.
-        int newPlayTime = (int) (videoEntity.getPlayTime() + stopTime);
+        int newPlayTime = stopTime;
+        if (newPlayTime > videoEntity.getDuration()) {
+            newPlayTime = videoEntity.getDuration();
+        }
         videoEntity.setPlayTime(newPlayTime);
 
         videoRepository.save(videoEntity);
@@ -143,12 +184,10 @@ public class VideoService {
         VideoPlayEntity videoPlayEntity = new VideoPlayEntity();
         videoPlayEntity.setVideoEntity(videoEntity);
         videoPlayEntity.setUserEntity(userEntity);
-        videoPlayEntity.setStopTime(stopTime);
+        videoPlayEntity.setStopTime(newPlayTime);
         videoPlayEntity.setCreatedAt(LocalDateTime.now());
         videoPlayEntity.setUpdatedAt(LocalDateTime.now());
 
         videoPlayRepository.save(videoPlayEntity);
     }
-
-
 }

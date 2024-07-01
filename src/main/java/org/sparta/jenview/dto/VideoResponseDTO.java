@@ -25,7 +25,4 @@ public class VideoResponseDTO {
         this.viewCount = viewCount;
         this.playTime = playTime;
     }
-
-    // Getters and setters (or use Lombok @Data annotation)
-    // ... (getters and setters omitted for brevity)
 }

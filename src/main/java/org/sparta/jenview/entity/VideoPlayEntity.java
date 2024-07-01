@@ -46,8 +46,7 @@ public class VideoPlayEntity {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "stop_time", nullable = false)
+    private Integer stopTime; // 시청이 중단된 시점
 
-    public void setStopTime(Integer stopTime) {
-        this.lastPlayedTime = stopTime;
-    }
 }

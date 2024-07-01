@@ -100,14 +100,15 @@ public class VideoController {
     // 비디오 시청 엔드포인트 추가
     @PostMapping("/watch/{id}")
     public ResponseEntity<VideoResponseDTO> watchVideo(@PathVariable Long id, @RequestBody VideoPlayDTO videoPlayDTO) {
-        videoService.incrementViewCount(id);
-        videoService.savePlayRecord(videoPlayDTO);
+        videoPlayDTO.setVideoId(id);
+        videoService.playVideo(id, videoPlayDTO.getUserId(), videoPlayDTO.getStopTime());
         VideoEntity videoEntity = videoService.getVideoEntityById(id);
         VideoResponseDTO response = videoMapper.toResponseDTO(videoEntity, videoPlayDTO.getUserId());
 
         return ResponseEntity.ok(response);
     }
-    //비디오 중지
+
+    // 비디오 중지
     @PostMapping("/stop/{id}")
     public ResponseEntity<VideoResponseDTO> stopVideo(@PathVariable Long id, @RequestBody VideoPlayDTO videoStopDTO) {
         videoStopDTO.setVideoId(id); // videoId를 DTO에 설정합니다.
@@ -118,6 +119,5 @@ public class VideoController {
 
         return ResponseEntity.ok(response);
     }
-
 
 }

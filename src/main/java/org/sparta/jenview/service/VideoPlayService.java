@@ -48,7 +48,7 @@ public class VideoPlayService {
         UserEntity userEntity = userRepository.findById(videoPlayDTO.getUserId()).orElseThrow(() -> new RuntimeException("User not found with id " + videoPlayDTO.getUserId()));
         VideoEntity videoEntity = videoRepository.findById(videoPlayDTO.getVideoId()).orElseThrow(() -> new RuntimeException("Video not found with id " + videoPlayDTO.getVideoId()));
 
-        VideoPlayEntity videoPlayEntity = videoPlayMapper.toEntity(videoPlayDTO);
+        VideoPlayEntity videoPlayEntity = videoPlayMapper.toEntity(videoPlayDTO, userEntity, videoEntity);
         videoPlayEntity.setUserEntity(userEntity);
         videoPlayEntity.setVideoEntity(videoEntity);
 
@@ -65,6 +65,9 @@ public class VideoPlayService {
     @Transactional
     public void deleteVideoPlayById(Long id) {
         videoPlayRepository.deleteById(id);
+    }
+
+    public void incrementAdViewCountsForVideo(Long videoId, int newPlayTime) {
     }
 }
 

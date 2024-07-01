@@ -7,7 +7,10 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import javax.net.ssl.SSLSession;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -15,6 +18,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Table(name = "videos")
 public class VideoEntity {
+    // ID를 설정하는 생성자
+    public VideoEntity(Long id) {
+        this.id = id;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -46,4 +54,5 @@ public class VideoEntity {
 
     @Column(name = "play_time", nullable = false)
     private long playTime;
+
 }
