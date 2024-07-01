@@ -16,6 +16,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Table(name = "users")
 public class UserEntity extends Timestamped {
+    public UserEntity(Long id) {
+        this.id = id;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
