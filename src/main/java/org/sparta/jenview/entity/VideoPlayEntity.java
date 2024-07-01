@@ -1,12 +1,14 @@
 package org.sparta.jenview.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.sparta.jenview.dto.VideoPlayDTO;
 
 import java.time.LocalDateTime;
 
@@ -30,11 +32,11 @@ public class VideoPlayEntity {
     @JoinColumn(name = "video_id", nullable = false)
     private VideoEntity videoEntity;
 
-    @Column(name = "last_played_at", nullable = false)
+    @Column(name = "last_played_at")
     private LocalDateTime lastPlayedAt;
 
     @Column(name = "last_played_time", nullable = false)
-    private Long lastPlayedTime;
+    private int lastPlayedTime;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -45,4 +47,7 @@ public class VideoPlayEntity {
     private LocalDateTime updatedAt;
 
 
+    public void setStopTime(Integer stopTime) {
+        this.lastPlayedTime = stopTime;
+    }
 }

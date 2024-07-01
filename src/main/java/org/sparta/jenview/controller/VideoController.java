@@ -1,6 +1,10 @@
 package org.sparta.jenview.controller;
 
 import org.sparta.jenview.dto.VideoDTO;
+import org.sparta.jenview.dto.VideoPlayDTO;
+import org.sparta.jenview.dto.VideoResponseDTO;
+import org.sparta.jenview.entity.VideoEntity;
+import org.sparta.jenview.mapper.VideoMapper;
 import org.sparta.jenview.service.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,11 +20,13 @@ import java.util.Map;
 public class VideoController {
 
     private final VideoService videoService;
+    private final VideoMapper videoMapper;
 
     // 생성자 주입을 통해 VideoService를 주입받습니다.
     @Autowired
-    public VideoController(VideoService videoService) {
+    public VideoController(VideoService videoService, VideoMapper videoMapper) {
         this.videoService = videoService;
+        this.videoMapper = videoMapper;
     }
 
     // 새로운 비디오를 생성하고 생성된 비디오의 ID와 메시지를 반환
@@ -29,13 +35,13 @@ public class VideoController {
         Long videoId = videoService.createVideo(videoDTO);
 
         Map<String, Object> response = new LinkedHashMap<>();
-        response.put("user_id", videoDTO.getUserId());
-        response.put("videoId", videoId);
-        response.put("title", videoDTO.getTitle());
-        response.put("description", videoDTO.getDescription());
-        response.put("duration", videoDTO.getDuration());
-        response.put("view_count", videoDTO.getViewCount());
-        response.put("play_time", videoDTO.getPlayTime());
+        response.put("시청자 id", videoDTO.getUserId());
+        response.put("동영상 관리 번호", videoId);
+        response.put("동영상 제목", videoDTO.getTitle());
+        response.put("동영상 내용", videoDTO.getDescription());
+        response.put("동영상 길이", videoDTO.getDuration());
+        response.put("현재 조회수", videoDTO.getViewCount());
+        response.put("현재 재생 시간", videoDTO.getPlayTime());
         response.put("msg", "비디오가 생성되었습니다. ");
 
         return ResponseEntity.ok(response);
@@ -51,7 +57,7 @@ public class VideoController {
 
     // 특정 ID의 비디오 정보를 가져옴
     @GetMapping("/{id}")
-    public ResponseEntity<VideoDTO> getVideo(@PathVariable Long id) {
+    public ResponseEntity<VideoDTO> getgetVideo(@PathVariable Long id) {
         VideoDTO videoDTO = videoService.getVideoById(id);
         return ResponseEntity.ok(videoDTO);
     }
@@ -90,5 +96,28 @@ public class VideoController {
         response.put("msg", "삭제완료");
         return ResponseEntity.ok(response);
     }
+
+    // 비디오 시청 엔드포인트 추가
+    @PostMapping("/watch/{id}")
+    public ResponseEntity<VideoResponseDTO> watchVideo(@PathVariable Long id, @RequestBody VideoPlayDTO videoPlayDTO) {
+        videoService.incrementViewCount(id);
+        videoService.savePlayRecord(videoPlayDTO);
+        VideoEntity videoEntity = videoService.getVideoEntityById(id);
+        VideoResponseDTO response = videoMapper.toResponseDTO(videoEntity, videoPlayDTO.getUserId());
+
+        return ResponseEntity.ok(response);
+    }
+    //비디오 중지
+    @PostMapping("/stop/{id}")
+    public ResponseEntity<VideoResponseDTO> stopVideo(@PathVariable Long id, @RequestBody VideoPlayDTO videoStopDTO) {
+        videoStopDTO.setVideoId(id); // videoId를 DTO에 설정합니다.
+        videoService.stopVideo(videoStopDTO);
+
+        VideoEntity videoEntity = videoService.getVideoEntityById(id); // 비디오 엔티티를 가져옵니다.
+        VideoResponseDTO response = videoMapper.toResponseDTO(videoEntity, videoStopDTO.getUserId());
+
+        return ResponseEntity.ok(response);
+    }
+
 
 }
