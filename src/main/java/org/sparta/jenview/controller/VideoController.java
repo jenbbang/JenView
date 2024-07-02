@@ -104,7 +104,6 @@ public class VideoController {
         videoService.playVideo(id, videoPlayDTO.getUserId(), videoPlayDTO.getStopTime());
         VideoEntity videoEntity = videoService.getVideoEntityById(id);
         VideoResponseDTO response = videoMapper.toResponseDTO(videoEntity, videoPlayDTO.getUserId());
-
         return ResponseEntity.ok(response);
     }
 

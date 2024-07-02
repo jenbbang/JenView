@@ -95,7 +95,7 @@ public class VideoService {
 
     // 비디오 재생
     @Transactional
-    public void playVideo(Long videoId, Long userId, int watchedDuration) {
+    public void playVideo(Long videoId, Long userId, Integer stopTime) {
         VideoEntity videoEntity = videoRepository.findById(videoId)
                 .orElseThrow(() -> new RuntimeException("비디오를 찾을 수 없습니다."));
         UserEntity userEntity = userRepository.findById(userId)
@@ -117,15 +117,20 @@ public class VideoService {
             LocalDateTime now = LocalDateTime.now();
 
             // 30초 이내의 재생은 어뷰징으로 간주하여 조회수 증가 및 시청 횟수 증가를 막음
-            if (lastPlayedAt != null && ChronoUnit.SECONDS.between(lastPlayedAt, now) < 30) {
+            if (lastPlayedAt != null && ChronoUnit.SECONDS.between(lastPlayedAt, now) <30) {
                 return;
             }
 
             videoPlayEntity.setLastPlayedAt(now); // 마지막 재생 시간 업데이트
+            videoEntity.setViewCount(videoEntity.getViewCount() + 1); // 조회수 증가
+
         }
 
+        // stopTime이 null이면 기본값 설정
+        int currentStopTime = stopTime != null ? stopTime : 0;
+
         // 현재까지 시청한 시간을 업데이트
-        int newPlayTime = videoPlayEntity.getStopTime() + watchedDuration;
+        int newPlayTime = videoPlayEntity.getStopTime() + currentStopTime;
         if (newPlayTime > videoEntity.getDuration()) {
             newPlayTime = videoEntity.getDuration();
         }
@@ -133,7 +138,6 @@ public class VideoService {
 
         videoRepository.save(videoEntity);
         videoPlayRepository.save(videoPlayEntity);
-
         // 광고 시청 횟수 증가
         videoPlayService.incrementAdViewCountsForVideo(videoId, newPlayTime);
     }
