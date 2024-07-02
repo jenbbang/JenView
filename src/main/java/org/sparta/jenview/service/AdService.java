@@ -1,5 +1,6 @@
 package org.sparta.jenview.service;
 
+import jakarta.transaction.Transactional;
 import org.sparta.jenview.dto.AdDTO;
 import org.sparta.jenview.dto.AdResponseDTO;
 import org.sparta.jenview.entity.AdEntity;
@@ -26,6 +27,7 @@ public class AdService {
         this.videoRepository = videoRepository;
         this.adMapper = adMapper;
     }
+
     public List<AdResponseDTO> createAdsForVideo(AdDTO adDTO) {
         VideoEntity videoEntity = videoRepository.findById(adDTO.getVideoId())
                 .orElseThrow(() -> new RuntimeException("Video not found with id " + adDTO.getVideoId()));
@@ -62,11 +64,25 @@ public class AdService {
         for (AdEntity adEntity : adEntities) {
             if (adEntity.getStartTime() <= watchedDuration) {
                 adEntity.incrementViewCount();
+
+                // 광고의 시청 시간이 광고의 길이를 초과하지 않도록 설정
+                int newPlayTime = (int) (adEntity.getPlayTime() + adEntity.getDuration());
+                if (newPlayTime > adEntity.getDuration()) {
+                    newPlayTime = adEntity.getDuration();
+                }
+                adEntity.setPlayTime(newPlayTime);
+
                 adRepository.save(adEntity);
                 adResponseList.add(adMapper.toResponseDTO(adEntity));
             }
         }
 
         return adResponseList;
+    }
+
+    @Transactional
+    public void deleteAdsByVideoId(Long videoId) {
+        List<AdEntity> ads = adRepository.findByVideoId(videoId);
+        adRepository.deleteAll(ads);
     }
 }

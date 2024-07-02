@@ -9,5 +9,6 @@ import java.util.List;
 @Repository
 public interface AdRepository extends JpaRepository<AdEntity, Long> {
     List<AdEntity> findByVideoId(Long videoId);
+    void deleteByVideoId(Long videoId);
 
 }
