@@ -2,11 +2,16 @@ package org.sparta.jenview.service;
 
 import jakarta.transaction.Transactional;
 import org.sparta.jenview.dto.AdDTO;
+import org.sparta.jenview.dto.AdPlayResponseDTO;
 import org.sparta.jenview.dto.AdResponseDTO;
 import org.sparta.jenview.entity.AdEntity;
+import org.sparta.jenview.entity.AdPlayEntity;
+import org.sparta.jenview.entity.UserEntity;
 import org.sparta.jenview.entity.VideoEntity;
 import org.sparta.jenview.mapper.AdMapper;
+import org.sparta.jenview.repository.AdPlayRepository;
 import org.sparta.jenview.repository.AdRepository;
+import org.sparta.jenview.repository.UserRepository;
 import org.sparta.jenview.repository.VideoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,12 +25,16 @@ public class AdService {
     private final AdRepository adRepository;
     private final VideoRepository videoRepository;
     private final AdMapper adMapper;
+    private final UserRepository userRepository;
+    private final AdPlayRepository adPlayRepository;
 
     @Autowired
-    public AdService(AdRepository adRepository, VideoRepository videoRepository, AdMapper adMapper) {
+    public AdService(AdRepository adRepository, VideoRepository videoRepository, AdMapper adMapper, UserRepository userRepository, AdPlayRepository adPlayRepository) {
         this.adRepository = adRepository;
         this.videoRepository = videoRepository;
         this.adMapper = adMapper;
+        this.userRepository = userRepository;
+        this.adPlayRepository = adPlayRepository;
     }
 
     public List<AdResponseDTO> createAdsForVideo(AdDTO adDTO) {
@@ -85,4 +94,27 @@ public class AdService {
         List<AdEntity> ads = adRepository.findByVideoId(videoId);
         adRepository.deleteAll(ads);
     }
+
+    @Transactional
+    public AdPlayResponseDTO incrementView(Long adId, Long userId, int playTime) {
+        AdEntity adEntity = adRepository.findById(adId)
+                .orElseThrow(() -> new RuntimeException("Ad not found with id " + adId));
+        UserEntity userEntity = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id " + userId));
+
+        // 광고 시청 기록 추가
+        AdPlayEntity adPlayEntity = new AdPlayEntity();
+        adPlayEntity.setAd(adEntity);
+        adPlayEntity.setUser(userEntity);
+        adPlayEntity.setPlayTime(playTime);
+        adPlayRepository.save(adPlayEntity);
+
+        // 광고 조회수 및 재생 시간 업데이트
+        adEntity.setAdCount(adEntity.getAdCount() + 1);
+        adEntity.setPlayTime(adEntity.getPlayTime() + playTime);
+        adRepository.save(adEntity);
+        return adMapper.toPlayResponseDTO(adEntity);
+    }
+
+
 }

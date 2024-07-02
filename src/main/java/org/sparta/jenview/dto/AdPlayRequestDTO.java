@@ -5,7 +5,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class AdViewRequestDTO {
+public class AdPlayRequestDTO {
+
     private Long videoId;
-    private Integer watchedDuration;
+    private int PlayTime;
+    private Long userId;
 }

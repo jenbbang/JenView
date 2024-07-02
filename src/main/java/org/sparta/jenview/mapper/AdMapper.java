@@ -1,6 +1,7 @@
 package org.sparta.jenview.mapper;
 
 import org.sparta.jenview.dto.AdDTO;
+import org.sparta.jenview.dto.AdPlayResponseDTO;
 import org.sparta.jenview.dto.AdResponseDTO;
 import org.sparta.jenview.entity.AdEntity;
 import org.sparta.jenview.entity.VideoEntity;
@@ -36,5 +37,9 @@ public class AdMapper {
 
     public AdResponseDTO toResponseDTO(AdEntity adEntity) {
         return new AdResponseDTO(adEntity);
+    }
+
+    public AdPlayResponseDTO toPlayResponseDTO(AdEntity adEntity) {
+        return new AdPlayResponseDTO(adEntity);
     }
 }
