@@ -115,6 +115,4 @@ public class AdService {
         adRepository.save(adEntity);
         return adMapper.toPlayResponseDTO(adEntity);
     }
-
-
 }

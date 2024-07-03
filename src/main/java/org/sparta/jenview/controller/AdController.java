@@ -37,7 +37,7 @@ public class AdController {
     public ResponseEntity<Map<String, String>> incrementView(@PathVariable Long adId, @RequestBody AdPlayRequestDTO adPlayRequestDTO) {
         adService.incrementView(adId, adPlayRequestDTO.getUserId(), adPlayRequestDTO.getPlayTime());
         Map<String, String> response = new HashMap<>();
-        response.put("message", "Ad view incremented successfully");
+        response.put("message", "광고 시청이 완료되었습니다.");
         return ResponseEntity.ok(response);
     }
 
