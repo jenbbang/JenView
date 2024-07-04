@@ -19,13 +19,4 @@ public interface VideoRepository extends JpaRepository<VideoEntity, Long> {
     @Modifying
     @Query("DELETE FROM VideoEntity v WHERE v.id = :videoId")
     void deleteByVideoId(Long videoId);
-
-
 }
-
-
-
-
-
-
-
