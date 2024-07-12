@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -91,31 +90,35 @@ public class AdService {
     }
 
     @Transactional
-    public void recordAdPlay(Long videoId, Long stopTime) {
+    public void recordAdPlay(Long videoId, Long stopTime, Long previousPlayTime) {
         VideoEntity videoEntity = videoRepository.findById(videoId)
                 .orElseThrow(() -> new RuntimeException("Video not found with id " + videoId));
 
-        // 비디오의 길이에 따라 300초마다 광고를 배치
         int adInterval = 300;
         int maxAds = (int) (videoEntity.getPlayTime() / adInterval);
 
         List<AdEntity> adEntities = adRepository.findByVideoId(videoId);
-        int adsPlayed = 0;
+
+        int adsPlayed = (int) (previousPlayTime / adInterval);
+
+        // 광고 재생을 위한 시작 시간과 종료 시간을 계산
+        long startTime = previousPlayTime;
+        long endTime = stopTime;
 
         for (AdEntity adEntity : adEntities) {
-            if (adsPlayed >= maxAds) break; // 최대 광고 재생 개수에 도달하면 종료
+            if (adsPlayed >= maxAds) break;
 
             // 광고가 재생될 시점을 300초마다 설정
-            int adStartTime = adInterval * (adsPlayed + 1);
+            long adStartTime = adInterval * (adsPlayed + 1);
 
-            if (adStartTime <= stopTime) {
+            if (adStartTime > startTime && adStartTime <= endTime) {
                 adEntity.setAdCount(adEntity.getAdCount() + 1);
                 adRepository.save(adEntity);
 
                 AdPlayEntity adPlayEntity = new AdPlayEntity();
                 adPlayEntity.setAdId(adEntity);
                 adPlayEntity.setVideoId(videoEntity);
-                adPlayEntity.setPlayTime(Math.toIntExact(stopTime)-Math.toIntExact(adStartTime));
+                adPlayEntity.setPlayTime((int) adStartTime);
 
                 adPlayRepository.save(adPlayEntity);
                 adsPlayed++;

@@ -240,6 +240,7 @@ public class VideoService {
         List<VideoPlayEntity> videoPlayEntities = videoPlayRepository.findByVideoEntity_IdAndUserEntity_Id(videoId, userId);
         VideoPlayEntity videoPlayEntity;
         Long totalPlayTime = stopTime;
+        Long previousPlayTime = 0L;
 
         if (!videoPlayEntities.isEmpty()) {
             // 이미 존재하는 비디오 시청 기록이 있는 경우
@@ -248,8 +249,9 @@ public class VideoService {
             // 디버그 로그 추가
             System.out.println("기존 시청 기록 존재: lastPlayedTime=" + lastVideoPlayEntity.getLastPlayedTime());
 
-            // 이전 누적 재생 시간에 현재 정지 시간을 더해서 totalPlayTime을 계산
-            totalPlayTime = lastVideoPlayEntity.getLastPlayedTime() + stopTime; // 이전 재생 시간에 현재 정지 시간 추가
+            previousPlayTime = (long) lastVideoPlayEntity.getLastPlayedTime();
+            totalPlayTime = previousPlayTime + stopTime; // 이전 재생 시간에 현재 정지 시간 추가
+
             // 총 재생 시간이 비디오의 전체 길이를 초과하지 않도록 제한
             if (totalPlayTime > videoEntity.getPlayTime()) {
                 Long remainingTime = videoEntity.getPlayTime() - lastVideoPlayEntity.getLastPlayedTime();
@@ -260,7 +262,7 @@ public class VideoService {
             // 새로운 정지 시간을 저장
             lastVideoPlayEntity.setStopTime(stopTime + lastVideoPlayEntity.getStopTime());
             // 누적 재생 시간을 저장
-            lastVideoPlayEntity.setLastPlayedTime((Math.toIntExact(totalPlayTime)));
+            lastVideoPlayEntity.setLastPlayedTime(Math.toIntExact(totalPlayTime));
 
             videoPlayEntity = lastVideoPlayEntity;
             videoPlayRepository.save(videoPlayEntity);
@@ -275,7 +277,7 @@ public class VideoService {
         }
 
         // 광고 재생 기록을 저장
-        adService.recordAdPlay(videoId, totalPlayTime);
+        adService.recordAdPlay(videoId, totalPlayTime, previousPlayTime);
 
         return "비디오 정지 기록이 저장되었습니다.";
     }
