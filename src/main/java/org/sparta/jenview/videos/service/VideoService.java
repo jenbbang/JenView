@@ -240,7 +240,6 @@ public class VideoService {
         List<VideoPlayEntity> videoPlayEntities = videoPlayRepository.findByVideoEntity_IdAndUserEntity_Id(videoId, userId);
         VideoPlayEntity videoPlayEntity;
         Long totalPlayTime = stopTime;
-        Long alreadyPlayedAds = 0L;
 
         if (!videoPlayEntities.isEmpty()) {
             // 이미 존재하는 비디오 시청 기록이 있는 경우
@@ -264,7 +263,6 @@ public class VideoService {
             lastVideoPlayEntity.setLastPlayedTime((Math.toIntExact(totalPlayTime)));
 
             videoPlayEntity = lastVideoPlayEntity;
-            alreadyPlayedAds = (long) (lastVideoPlayEntity.getLastPlayedTime() / 300);
             videoPlayRepository.save(videoPlayEntity);
         } else {
             // 새로운 비디오 시청 기록을 생성
@@ -277,7 +275,7 @@ public class VideoService {
         }
 
         // 광고 재생 기록을 저장
-        adService.recordAdPlay(videoId, totalPlayTime, alreadyPlayedAds);
+        adService.recordAdPlay(videoId, totalPlayTime);
 
         return "비디오 정지 기록이 저장되었습니다.";
     }

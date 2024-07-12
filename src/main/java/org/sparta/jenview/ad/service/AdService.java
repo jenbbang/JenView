@@ -91,7 +91,7 @@ public class AdService {
     }
 
     @Transactional
-    public void recordAdPlay(Long videoId, Long stopTime, Long alreadyPlayedAds) {
+    public void recordAdPlay(Long videoId, Long stopTime) {
         VideoEntity videoEntity = videoRepository.findById(videoId)
                 .orElseThrow(() -> new RuntimeException("Video not found with id " + videoId));
 
@@ -100,11 +100,7 @@ public class AdService {
         int maxAds = (int) (videoEntity.getPlayTime() / adInterval);
 
         List<AdEntity> adEntities = adRepository.findByVideoId(videoId);
-        int adsPlayed = alreadyPlayedAds.intValue();
-
-        System.out.println("Total ads to be played: " + adEntities.size());
-        System.out.println("Maximum ads allowed: " + maxAds);
-        System.out.println("Ads already played: " + adsPlayed);
+        int adsPlayed = 0;
 
         for (AdEntity adEntity : adEntities) {
             if (adsPlayed >= maxAds) break; // 최대 광고 재생 개수에 도달하면 종료
@@ -116,26 +112,13 @@ public class AdService {
                 adEntity.setAdCount(adEntity.getAdCount() + 1);
                 adRepository.save(adEntity);
 
-                // 최근 광고 기록 확인
-                Optional<AdPlayEntity> lastAdPlayEntityOpt = adPlayRepository.findTopByVideoId_IdOrderByPlayTimeDesc(videoId);
-                if (lastAdPlayEntityOpt.isPresent()) {
-                    AdPlayEntity lastAdPlayEntity = lastAdPlayEntityOpt.get();
-                    if (lastAdPlayEntity.getAdId().getId().equals(adEntity.getId()) && lastAdPlayEntity.getPlayTime() == adStartTime) {
-                        System.out.println("Skipping ad with ID " + adEntity.getId() + " as it's the same as the last one.");
-                        continue; // 직전 광고와 동일하면 넘어감
-                    }
-                }
-
                 AdPlayEntity adPlayEntity = new AdPlayEntity();
                 adPlayEntity.setAdId(adEntity);
                 adPlayEntity.setVideoId(videoEntity);
-                adPlayEntity.setPlayTime(adStartTime);
+                adPlayEntity.setPlayTime(Math.toIntExact(stopTime)-Math.toIntExact(adStartTime));
 
                 adPlayRepository.save(adPlayEntity);
-                System.out.println("Saved ad play for ad ID " + adEntity.getId() + " at play time " + adStartTime);
                 adsPlayed++;
-            } else {
-                System.out.println("Ad start time " + adStartTime + " is greater than stop time " + stopTime);
             }
         }
     }
