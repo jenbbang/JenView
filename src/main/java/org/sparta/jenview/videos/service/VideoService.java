@@ -277,7 +277,7 @@ public class VideoService {
         }
 
         // 광고 재생 기록을 저장
-        adService.recordAdPlay(videoId, totalPlayTime, previousPlayTime);
+        adService.recordAdPlay(videoId, stopTime, previousPlayTime);
 
         return "비디오 정지 기록이 저장되었습니다.";
     }

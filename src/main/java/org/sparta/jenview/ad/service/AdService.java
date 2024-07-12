@@ -103,7 +103,7 @@ public class AdService {
 
         // 광고 재생을 위한 시작 시간과 종료 시간을 계산
         long startTime = previousPlayTime;
-        long endTime = stopTime;
+        long endTime = previousPlayTime + stopTime;
 
         for (AdEntity adEntity : adEntities) {
             if (adsPlayed >= maxAds) break;
