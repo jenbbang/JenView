@@ -5,14 +5,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class VideoDTO {
-    private Long id;
-    private Long userId; // userId 추가
+public class VideoRequestDTO {
+    private Long userId;
     private String title;
     private String description;
     private int viewCount;
-    private int playTime;
+    private long playTime;
     private int stopTime;
-
-
 }

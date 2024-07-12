@@ -1,67 +1,45 @@
 package org.sparta.jenview.plays.controller;
 
+import org.sparta.jenview.ad.dto.AdResponseDTO;
+import org.sparta.jenview.ad.entity.AdEntity;
 import org.sparta.jenview.plays.dto.AdPlayDTO;
+import org.sparta.jenview.plays.mapper.AdPlayMapper;
+import org.sparta.jenview.plays.repository.AdPlayRepository;
 import org.sparta.jenview.plays.service.AdPlayService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/ad-plays")
 public class AdPlayController {
 
     private final AdPlayService adPlayService;
+    private final AdPlayRepository adPlayRepository;
+    private final AdPlayMapper adPlayMapper;
 
     @Autowired
-    public AdPlayController(AdPlayService adPlayService) {
+    public AdPlayController(AdPlayService adPlayService, AdPlayRepository adPlayRepository, AdPlayMapper adPlayMapper) {
         this.adPlayService = adPlayService;
+        this.adPlayRepository = adPlayRepository;
+        this.adPlayMapper = adPlayMapper;
     }
 
-    @GetMapping
+ @GetMapping
     public ResponseEntity<List<AdPlayDTO>> getAdPlayList() {
         List<AdPlayDTO> adPlayDTOList = adPlayService.getAdPlayList();
         return ResponseEntity.ok(adPlayDTOList);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AdPlayDTO> getAdPlayById(@PathVariable Long id) {
+    public ResponseEntity<AdPlayDTO> getAdPlayById(@PathVariable("id") Long id) {
         AdPlayDTO adPlayDTO = adPlayService.getAdPlayById(id);
         return ResponseEntity.ok(adPlayDTO);
-    }
-
-    @PostMapping
-    public ResponseEntity<Map<String, String>> createAdPlay(@RequestBody AdPlayDTO adPlayDTO) {
-        adPlayService.createAdPlay(adPlayDTO);
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Ad play created successfully");
-        return ResponseEntity.ok(response);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Map<String, String>> updateAdPlay(@PathVariable Long id, @RequestBody AdPlayDTO adPlayDTO) {
-        adPlayService.updateAdPlay(id, adPlayDTO);
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Ad play updated successfully");
-        return ResponseEntity.ok(response);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String, String>> deleteAdPlay(@PathVariable Long id) {
-        adPlayService.deleteAdPlay(id);
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Ad play deleted successfully");
-        return ResponseEntity.ok(response);
-    }
-
-    @DeleteMapping("/ad/{adId}")
-    public ResponseEntity<Map<String, String>> deleteAdPlaysByAdId(@PathVariable Long adId) {
-        adPlayService.deleteAdPlaysByAdId(adId);
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "All ad plays for ad ID " + adId + " deleted successfully");
-        return ResponseEntity.ok(response);
     }
 }

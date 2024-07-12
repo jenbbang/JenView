@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface VideoPlayRepository extends JpaRepository<VideoPlayEntity, Long> {
     List<VideoPlayEntity> findByVideoEntity_IdAndUserEntity_Id(Long videoId, Long userId);
+    List<VideoPlayEntity> findByVideoEntity_Id(Long videoId); // 추가된 메서드
 }

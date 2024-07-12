@@ -22,17 +22,6 @@ public class VideoPlayController {
         this.videoPlayService = videoPlayService;
     }
 
-    // 새로운 비디오 플레이 생성
-    @PostMapping
-    public ResponseEntity<Map<String, Object>> createVideoPlay(@RequestBody VideoPlayDTO videoPlayDTO) {
-        Long id = videoPlayService.createVideoPlay(videoPlayDTO);
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("user_id", videoPlayDTO.getUserId());
-        response.put("videoId", id);
-        response.put("last_played_time", videoPlayDTO.getLastPlayedTime());
-        response.put("msg", "비디오플레이를 생성합니다. ");
-        return ResponseEntity.ok(response);
-    }
 
     // 모든 비디오플레이 정보를 가져옴
     @GetMapping
@@ -43,7 +32,7 @@ public class VideoPlayController {
 
     // 비디오 id 별 비디오플레이 정보를 가져옴
     @GetMapping("/{id}")
-    public ResponseEntity<VideoPlayDTO> getVideoById(@PathVariable Long id) {
+    public ResponseEntity<VideoPlayDTO> getVideoById(@PathVariable("id") Long id) {
         VideoPlayDTO videoPlayDTO = videoPlayService.getVideoById(id);
         return ResponseEntity.ok(videoPlayDTO);
 

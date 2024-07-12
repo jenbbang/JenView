@@ -43,18 +43,6 @@ public class VideoPlayService {
         return videoPlayMapper.toDTO(videoPlayEntity);
     }
 
-    // 새로운 비디오 플레이 생성 메서드
-    public Long createVideoPlay(VideoPlayDTO videoPlayDTO) {
-        UserEntity userEntity = userRepository.findById(videoPlayDTO.getUserId()).orElseThrow(() -> new RuntimeException("User not found with id " + videoPlayDTO.getUserId()));
-        VideoEntity videoEntity = videoRepository.findById(videoPlayDTO.getVideoId()).orElseThrow(() -> new RuntimeException("Video not found with id " + videoPlayDTO.getVideoId()));
-
-        VideoPlayEntity videoPlayEntity = videoPlayMapper.toEntity(videoPlayDTO, userEntity, videoEntity);
-        videoPlayEntity.setUserEntity(userEntity);
-        videoPlayEntity.setVideoEntity(videoEntity);
-
-        videoPlayRepository.save(videoPlayEntity);
-        return videoPlayEntity.getId(); // 생성된 비디오플레이의 ID를 반환
-    }
 
     @Transactional(readOnly = true)
     public VideoPlayEntity findById(Long id) {

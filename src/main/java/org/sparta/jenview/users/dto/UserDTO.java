@@ -8,8 +8,9 @@ import org.sparta.jenview.users.entity.Role;
 @Setter
 public class UserDTO {
 
-    private Role role;
+    private Long id;
     private String name;
+    private Role role;
     private String username;
     private String email;
 

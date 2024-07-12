@@ -1,17 +1,12 @@
 package org.sparta.jenview.ad.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.Objects;
 
-@Getter
-@Setter
 @NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class AdsId implements Serializable {
     private Long id;
     private Long videoId;

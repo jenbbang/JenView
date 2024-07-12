@@ -1,17 +1,12 @@
 package org.sparta.jenview.ad.controller;
 
-import org.sparta.jenview.ad.dto.AdDTO;
 import org.sparta.jenview.ad.dto.AdResponseDTO;
-import org.sparta.jenview.plays.dto.AdPlayRequestDTO;
 import org.sparta.jenview.ad.service.AdService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/ads")
@@ -25,26 +20,14 @@ public class AdController {
         this.adService = adService;
     }
 
-    //광고 생성
     @PostMapping
-    public ResponseEntity<List<AdResponseDTO>> createAds(@RequestBody AdDTO adDTO) {
-        List<AdResponseDTO> savedAds = adService.createAdsForVideo(adDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedAds);
+    public ResponseEntity<List<AdResponseDTO>> createAds(@RequestBody(required = false) Integer numberOfAds) {
+        List<AdResponseDTO> createdAds = adService.createRandomAds(numberOfAds);
+        return ResponseEntity.ok(createdAds);
     }
 
-    @PostMapping("/increment-view/{adId}")
-    public ResponseEntity<Map<String, String>> incrementView(@PathVariable Long adId, @RequestBody AdPlayRequestDTO adPlayRequestDTO) {
-        adService.incrementView(adId, adPlayRequestDTO.getUserId(), adPlayRequestDTO.getPlayTime());
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "광고 시청이 완료되었습니다.");
-        return ResponseEntity.ok(response);
-    }
-
-    // 광고 조회수 증가 (비디오 기준)
-    @PostMapping("/increment-view-by-video")
-    public ResponseEntity<List<AdResponseDTO>> incrementAdViewCountsForVideo(@RequestBody AdPlayRequestDTO adPlayRequestDTO) {
-        List<AdResponseDTO> adResponses = adService.incrementAdViewCountsForVideo(adPlayRequestDTO.getVideoId(), adPlayRequestDTO.getPlayTime());
-        return ResponseEntity.status(HttpStatus.OK).body(adResponses);
-    }
+//    @GetMapping("/random/{videoId}")
+//    public ResponseEntity<AdEntity> getRandomAd(@PathVariable("videoId") Long videoId) {
+//        AdEntity randomAd = adService.getRandomAdForVideo(videoId);
+//        return ResponseEntity.ok(randomAd);
 }
-

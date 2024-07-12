@@ -9,5 +9,6 @@ public class AdPlayDTO {
     private Long id;
     private Long adId;
     private Long userId;
+    private Long videoId;
     private int playTime;
 }

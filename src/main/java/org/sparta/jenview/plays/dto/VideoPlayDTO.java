@@ -3,6 +3,9 @@ package org.sparta.jenview.plays.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 
 @Getter
 @Setter
@@ -12,6 +15,12 @@ public class VideoPlayDTO {
     private Long userId;
     private Long videoId;
     private int lastPlayedTime;
-    private Integer stopTime; // 추가: 정지 시점 (초 단위)
+    private Long stopTime = 0L; // 시청 중지 시간을 기본값 0으로 설정
+    private LocalDateTime createdAt;
+
+
+    public VideoPlayDTO() {
+
+    }
 
 }

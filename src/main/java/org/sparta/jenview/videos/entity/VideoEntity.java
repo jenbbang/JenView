@@ -4,9 +4,11 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.sparta.jenview.users.entity.UserEntity;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -34,14 +36,13 @@ public class VideoEntity {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "duration", nullable = false)
-    private int duration;
-
+    @CreationTimestamp
     @Column(name = "created_at", updatable = false)
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
+    @UpdateTimestamp
     @Column(name = "updated_at")
-    private LocalDate updatedAt;
+    private LocalDateTime updatedAt;
 
     @Column(name = "view_count", nullable = false)
     private int viewCount;
@@ -51,5 +52,7 @@ public class VideoEntity {
 
     @Column(name = "settled_today", nullable = false)
     private boolean settledToday;
+
+
 
 }

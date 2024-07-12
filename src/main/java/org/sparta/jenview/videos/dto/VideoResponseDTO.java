@@ -7,22 +7,25 @@ import lombok.Setter;
 @Setter
 
 public class VideoResponseDTO {
-    private Long videoId;
+
+    private Long id;
     private Long userId;
     private String title;
     private String description;
-    private Integer duration;
     private Integer viewCount;
-    private Long playTime;
+    private Long stopTime;
 
     // Constructor
-    public VideoResponseDTO(Long videoId, Long userId, String title, String description, Integer duration, Integer viewCount, Long playTime) {
-        this.videoId = videoId;
+    public VideoResponseDTO(Long stopTime, Long id,Long userId, String title, String description, Integer viewCount) {
+        this.id = id;
         this.userId = userId;
         this.title = title;
         this.description = description;
-        this.duration = duration;
         this.viewCount = viewCount;
-        this.playTime = playTime;
+        this.stopTime = stopTime;
+    }
+
+    public VideoResponseDTO() {
+
     }
 }

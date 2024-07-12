@@ -28,14 +28,12 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
     private final JWTUtil jwtUtil;
-    private final BlacklistFilter blacklistFilter; // BlacklistFilter 주입
     private final CustomLogoutSuccessHandler customLogoutSuccessHandler; // CustomLogoutSuccessHandler 주입
 
     public SecurityConfig(CustomOAuth2UserService customOAuth2UserService, CustomSuccessHandler customSuccessHandler, JWTUtil jwtUtil, BlacklistFilter blacklistFilter, CustomLogoutSuccessHandler customLogoutSuccessHandler) {
         this.customOAuth2UserService = customOAuth2UserService;
         this.customSuccessHandler = customSuccessHandler;
         this.jwtUtil = jwtUtil;
-        this.blacklistFilter = blacklistFilter; // BlacklistFilter 초기화
         this.customLogoutSuccessHandler = customLogoutSuccessHandler; // CustomLogoutSuccessHandler 초기화
     }
 
@@ -76,10 +74,6 @@ public class SecurityConfig {
 
         //HTTP Basic 인증 방식 disable
         http.httpBasic((auth) -> auth.disable());
-
-
-//        BlacklistFilter 추가
-//        http.addFilterBefore(blacklistFilter, UsernamePasswordAuthenticationFilter.class);
 
         //oauth2
         http.oauth2Login((oauth2) -> oauth2

@@ -14,7 +14,8 @@ public class VideoPlayMapper {
         videoPlayDTO.setId(videoPlayEntity.getId());
         videoPlayDTO.setVideoId(videoPlayEntity.getVideoEntity().getId());
         videoPlayDTO.setUserId(videoPlayEntity.getUserEntity().getId());
-        videoPlayDTO.setStopTime(videoPlayEntity.getStopTime());
+        videoPlayDTO.setStopTime(Long.valueOf(videoPlayEntity.getStopTime()));
+        videoPlayDTO.setCreatedAt(videoPlayEntity.getCreatedAt());
         return videoPlayDTO;
     }
 
@@ -24,6 +25,7 @@ public class VideoPlayMapper {
         videoPlayEntity.setVideoEntity(videoEntity);
         videoPlayEntity.setUserEntity(userEntity);
         videoPlayEntity.setStopTime(videoPlayDTO.getStopTime());
+        videoPlayEntity.setCreatedAt(videoPlayDTO.getCreatedAt());
         return videoPlayEntity;
     }
 

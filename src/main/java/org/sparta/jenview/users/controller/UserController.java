@@ -58,7 +58,7 @@ public class UserController {
     }
 
     @GetMapping("/userinfo/{id}")
-    public ResponseEntity<List<UserDTO>> getUserInfo(@PathVariable Long id) {
+    public ResponseEntity<List<UserDTO>> getUserInfo(@PathVariable("id") Long id) {
         UserDTO userDTO = userService.getUserInfo(id);
         return ResponseEntity.ok(Collections.singletonList(userDTO));
     }

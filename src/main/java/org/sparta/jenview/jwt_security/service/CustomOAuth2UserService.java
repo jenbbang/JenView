@@ -13,34 +13,36 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.util.logging.Logger;
+
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
+
+    private static final Logger logger = Logger.getLogger(CustomOAuth2UserService.class.getName());
+
     private final UserRepository userRepository;
 
     public CustomOAuth2UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
-    //유저 정보 DB 저장
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-
         OAuth2User oAuth2User = super.loadUser(userRequest);
-        System.out.println("name: " + oAuth2User);
+        logger.info("OAuth2 User Info: " + oAuth2User);
 
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
         OAuth2Response oAuth2Response = null;
-        if (registrationId.equals("google")) {
+        if ("google".equals(registrationId)) {
             oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
         } else {
             return null;
         }
 
-        String username = oAuth2Response.getProvider()+" "+oAuth2Response.getProviderId();
+        String username = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
         UserEntity existData = userRepository.findByUsername(username);
 
         if (existData == null) {
-
             UserEntity user = new UserEntity();
             user.setUsername(username);
             user.setEmail(oAuth2Response.getEmail());
@@ -48,6 +50,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             user.setRole(Role.USER);
 
             userRepository.save(user);
+            logger.info("New User Saved: " + user);
 
             UserDTO userDTO = new UserDTO();
             userDTO.setUsername(username);
@@ -55,12 +58,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             userDTO.setRole(Role.USER);
 
             return new CustomOAuth2User(userDTO);
-        }
-        else {
+        } else {
             existData.setEmail(oAuth2Response.getEmail());
             existData.setName(oAuth2Response.getName());
 
             userRepository.save(existData);
+            logger.info("Existing User Updated: " + existData);
 
             UserDTO userDTO = new UserDTO();
             userDTO.setUsername(existData.getUsername());
