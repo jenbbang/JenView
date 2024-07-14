@@ -13,7 +13,7 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Ad_StatisticId implements Serializable {
+public class AdStatId implements Serializable {
 
     private Long adId;
     private Long videoId;
@@ -23,7 +23,7 @@ public class Ad_StatisticId implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Ad_StatisticId that = (Ad_StatisticId) o;
+        AdStatId that = (AdStatId) o;
         return Objects.equals(adId, that.adId) &&
                 Objects.equals(videoId, that.videoId) &&
                 Objects.equals(createdAt, that.createdAt);

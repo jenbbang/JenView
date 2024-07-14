@@ -41,4 +41,7 @@ public class VideoPlayEntity {
     @Column(name = "stop_time", nullable = false)
     private Long stopTime; // 시청이 중단된 시점
 
+    @Column(name = "play_time", nullable = false)
+    private long playTime;
+
 }
