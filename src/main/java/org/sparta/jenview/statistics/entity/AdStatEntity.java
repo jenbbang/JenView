@@ -31,7 +31,4 @@ public class AdStatEntity {
 
     @Column(name = "view_count", nullable = false)
     private int viewCount;
-
-    @Column(name = "total_play_time", nullable = false)
-    private long totalPlayTime;
 }

@@ -7,11 +7,11 @@ import java.util.List;
 
 @Getter
 @Setter
-public class StatResponseDTO {
-    private List<VideoStatDTO> stats;
+public class AdStatResponseDTO {
+    private List<AdStatDTO> stats;
     private String message;
 
-    public StatResponseDTO(List<VideoStatDTO> stats, String message) {
+    public AdStatResponseDTO(List<AdStatDTO> stats, String message) {
         this.stats = stats;
         this.message = message;
     }

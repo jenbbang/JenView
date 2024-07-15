@@ -1,6 +1,6 @@
 package org.sparta.jenview.statistics.controller;
 
-import org.sparta.jenview.statistics.dto.StatResponseDTO;
+import org.sparta.jenview.statistics.dto.VideoStatResponseDTO;
 import org.sparta.jenview.statistics.dto.VideoStatDTO;
 import org.sparta.jenview.statistics.service.VideoStatService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ public class VideoStatController {
     }
 
     @GetMapping("/top5/viewcount")
-    public StatResponseDTO getTop5ByViewCount(
+    public VideoStatResponseDTO getTop5ByViewCount(
             @RequestParam(name = "period", defaultValue = "daily") String period) {
         LocalDateTime start, end = LocalDate.now().atTime(LocalTime.MAX);
         String message = "";
@@ -47,11 +47,11 @@ public class VideoStatController {
         }
 
         List<VideoStatDTO> stats = videoStatService.getTop5ByViewCount(start, end);
-        return new StatResponseDTO(stats, message);
+        return new VideoStatResponseDTO(stats, message);
     }
 
     @GetMapping("/top5/playtime")
-    public StatResponseDTO getTop5ByTotalPlayTime(
+    public VideoStatResponseDTO getTop5ByTotalPlayTime(
             @RequestParam(name = "period", defaultValue = "daily") String period) {
         LocalDateTime start, end = LocalDate.now().atTime(LocalTime.MAX);
         String message = "";
@@ -74,7 +74,7 @@ public class VideoStatController {
         }
 
         List<VideoStatDTO> stats = videoStatService.getTop5ByTotalPlayTime(start, end);
-        return new StatResponseDTO(stats, message);
+        return new VideoStatResponseDTO(stats, message);
     }
 
 

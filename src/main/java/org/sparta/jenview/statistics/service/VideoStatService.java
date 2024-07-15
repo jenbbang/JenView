@@ -91,9 +91,14 @@ public class VideoStatService {
 
     @Transactional
     public void createStatisticsForAllVideos() {
-        List<VideoEntity> allVideos = videoRepository.findAll();
-        for (VideoEntity video : allVideos) {
-            createVideoStatistics(video.getId());
+        LocalDateTime startOfDay = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDateTime endOfDay = LocalDate.now().atTime(LocalTime.MAX);
+
+        // 시청 기록이 있는 동영상만 조회
+        List<Long> videoIdsWithPlays = videoPlayRepository.findDistinctVideoEntity_IdByCreatedAtBetween(startOfDay, endOfDay);
+
+        for (Long videoId : videoIdsWithPlays) {
+            createVideoStatistics(videoId);
         }
     }
 }

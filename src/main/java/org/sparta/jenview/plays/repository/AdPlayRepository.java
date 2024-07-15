@@ -5,6 +5,7 @@ import org.sparta.jenview.videos.entity.VideoEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,4 +13,5 @@ import java.util.Optional;
 public interface AdPlayRepository extends JpaRepository<AdPlayEntity, Long> {
     Optional<AdPlayEntity> findTopByVideoId_IdOrderByPlayTimeDesc(Long videoId);
     List<AdPlayEntity> findByVideoId_Id(Long videoId);
+    List<AdPlayEntity> findByAdId_IdAndCreatedAtBetween(Long adId, LocalDateTime start, LocalDateTime end);
 }
