@@ -8,12 +8,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class VideoStatMapper {
 
-    public VideoStatDTO toDTO(VideoStatEntity videoStatEntity) {
+    public VideoStatDTO toDTO(VideoStatEntity videoStatEntity, String rank) {
         VideoStatDTO videoStatDTO = new VideoStatDTO();
         videoStatDTO.setVideoId(videoStatEntity.getVideoId().getId());
         videoStatDTO.setVideoTitle(videoStatEntity.getVideoId().getTitle());
         videoStatDTO.setViewCount(videoStatEntity.getViewCount());
         videoStatDTO.setTotalPlayTime(videoStatEntity.getTotalPlayTime());
+        videoStatDTO.setRank(rank); // rank 필드 설정
+        videoStatDTO.setCreatedAt(videoStatEntity.getCreatedAt());
         return videoStatDTO;
     }
 

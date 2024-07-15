@@ -5,95 +5,70 @@ import org.sparta.jenview.plays.repository.VideoPlayRepository;
 import org.sparta.jenview.statistics.dto.VideoStatDTO;
 import org.sparta.jenview.statistics.entity.VideoStatEntity;
 import org.sparta.jenview.statistics.mapper.VideoStatMapper;
-import org.sparta.jenview.statistics.repository.VideoStstRepository;
+import org.sparta.jenview.statistics.repository.VideoStatRepository;
 import org.sparta.jenview.videos.entity.VideoEntity;
 import org.sparta.jenview.videos.repository.VideoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.temporal.TemporalAdjusters;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 public class VideoStatService {
 
-    private final VideoStstRepository videoStatRepository;
+    private final VideoStatRepository videoStatRepository;
     private final VideoRepository videoRepository;
-    private final VideoStatMapper videoStatMapper;
     private final VideoPlayRepository videoPlayRepository;
+    private final VideoStatMapper videoStatMapper;
 
     @Autowired
-    public VideoStatService(VideoPlayRepository videoPlayRepository, VideoStstRepository videoStatRepository, VideoRepository videoRepository, VideoStatMapper videoStatMapper) {
+    public VideoStatService(VideoStatMapper videoStatMapper, VideoPlayRepository videoPlayRepository, VideoStatRepository videoStatRepository, VideoRepository videoRepository) {
         this.videoStatRepository = videoStatRepository;
         this.videoRepository = videoRepository;
-        this.videoStatMapper = videoStatMapper;
         this.videoPlayRepository = videoPlayRepository;
+        this.videoStatMapper = videoStatMapper;
     }
 
-    public List<VideoStatDTO> getTop5VideosByViews(LocalDate date, String period) {
-        LocalDateTime startDate;
-        LocalDateTime endDate;
+    public List<VideoStatDTO> getTop5ByViewCount(LocalDateTime start, LocalDateTime end) {
+        Pageable pageable = PageRequest.of(0, 5);
+        List<VideoStatEntity> entities = videoStatRepository.findTop5ByViewCount(start, end, pageable);
 
-        switch (period.toLowerCase()) {
-            case "day":
-                startDate = date.atStartOfDay();
-                endDate = date.atTime(LocalTime.MAX);
-                break;
-            case "week":
-                startDate = date.with(TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY)).atStartOfDay();
-                endDate = date.with(TemporalAdjusters.nextOrSame(java.time.DayOfWeek.SUNDAY)).atTime(LocalTime.MAX);
-                break;
-            case "month":
-                startDate = date.with(TemporalAdjusters.firstDayOfMonth()).atStartOfDay();
-                endDate = date.with(TemporalAdjusters.lastDayOfMonth()).atTime(LocalTime.MAX);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid period: " + period);
-        }
-
-        List<VideoStatEntity> videoStatEntities = videoStatRepository.findTop5ByCreatedAtBetweenOrderByViewCountDesc(startDate, endDate);
-        return videoStatEntities.stream().map(videoStatMapper::toDTO).collect(Collectors.toList());
+        return IntStream.range(0, entities.size())
+                .mapToObj(i -> videoStatMapper.toDTO(entities.get(i), "TOP " + (i + 1)))
+                .collect(Collectors.toList());
     }
 
-    public List<VideoStatDTO> getTop5VideosByPlayTime(LocalDate date, String period) {
-        LocalDateTime startDate;
-        LocalDateTime endDate;
+    public List<VideoStatDTO> getTop5ByTotalPlayTime(LocalDateTime start, LocalDateTime end) {
+        Pageable pageable = PageRequest.of(0, 5);
+        List<VideoStatEntity> entities = videoStatRepository.findTop5ByTotalPlayTime(start, end, pageable);
 
-        switch (period.toLowerCase()) {
-            case "day":
-                startDate = date.atStartOfDay();
-                endDate = date.atTime(LocalTime.MAX);
-                break;
-            case "week":
-                startDate = date.with(TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY)).atStartOfDay();
-                endDate = date.with(TemporalAdjusters.nextOrSame(java.time.DayOfWeek.SUNDAY)).atTime(LocalTime.MAX);
-                break;
-            case "month":
-                startDate = date.with(TemporalAdjusters.firstDayOfMonth()).atStartOfDay();
-                endDate = date.with(TemporalAdjusters.lastDayOfMonth()).atTime(LocalTime.MAX);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid period: " + period);
-        }
-
-        List<VideoStatEntity> videoStatEntities = videoStatRepository.findTop5ByCreatedAtBetweenOrderByTotalPlayTimeDesc(startDate, endDate);
-        return videoStatEntities.stream().map(videoStatMapper::toDTO).collect(Collectors.toList());
+        return IntStream.range(0, entities.size())
+                .mapToObj(i -> videoStatMapper.toDTO(entities.get(i), "TOP " + (i + 1)))
+                .collect(Collectors.toList());
     }
-    @Transactional
+
+
     public void createVideoStatistics(Long videoId) {
         VideoEntity videoEntity = videoRepository.findById(videoId)
                 .orElseThrow(() -> new RuntimeException("Video not found with id " + videoId));
 
-        List<VideoPlayEntity> videoPlayEntities = videoPlayRepository.findByVideoEntity_Id(videoId);
+        LocalDateTime startOfDay = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDateTime endOfDay = LocalDate.now().atTime(LocalTime.MAX);
+
+        List<VideoPlayEntity> videoPlayEntities = videoPlayRepository.findByVideoEntity_IdAndCreatedAtBetween(videoId, startOfDay, endOfDay);
 
         int totalViewCount = videoPlayEntities.size();
-        long totalPlayTime = videoPlayEntities.stream().mapToLong(VideoPlayEntity::getPlayTime).sum();
+        long totalPlayTime = videoPlayEntities.stream().mapToLong(VideoPlayEntity::getLastPlayedTime).sum();
 
         Optional<VideoStatEntity> latestStatOpt = Optional.ofNullable(videoStatRepository.findTopByVideoIdOrderByCreatedAtDesc(videoEntity));
 
