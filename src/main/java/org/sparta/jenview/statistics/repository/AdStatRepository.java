@@ -15,7 +15,9 @@ import java.util.List;
 @Repository
 public interface AdStatRepository extends JpaRepository<AdStatEntity, AdStatId> {
 
-    List<AdStatEntity> findByVideoIdIdAndCreatedAtBetween(Long videoId, LocalDateTime start, LocalDateTime end);
+    @Query("SELECT a FROM AdStatEntity a WHERE a.videoId.id = :videoId AND a.createdAt BETWEEN :start AND :end ORDER BY a.createdAt ASC")
+    List<AdStatEntity> findByVideoIdIdAndCreatedAtBetween(@Param("videoId") Long videoId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
 
     @Query("SELECT a FROM AdStatEntity a WHERE a.createdAt BETWEEN :start AND :end ORDER BY a.viewCount DESC")
     List<AdStatEntity> findTop5ByViewCount(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end, Pageable pageable);

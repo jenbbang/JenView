@@ -19,12 +19,15 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class VideoStatService {
+
+    private static final Logger logger = LoggerFactory.getLogger(VideoStatService.class);
 
     private final VideoStatRepository videoStatRepository;
     private final VideoRepository videoRepository;
@@ -57,7 +60,6 @@ public class VideoStatService {
                 .collect(Collectors.toList());
     }
 
-
     public void createVideoStatistics(Long videoId) {
         VideoEntity videoEntity = videoRepository.findById(videoId)
                 .orElseThrow(() -> new RuntimeException("Video not found with id " + videoId));
@@ -70,23 +72,17 @@ public class VideoStatService {
         int totalViewCount = videoPlayEntities.size();
         long totalPlayTime = videoPlayEntities.stream().mapToLong(VideoPlayEntity::getLastPlayedTime).sum();
 
-        Optional<VideoStatEntity> latestStatOpt = Optional.ofNullable(videoStatRepository.findTopByVideoIdOrderByCreatedAtDesc(videoEntity));
+        logger.info("Video ID: {}, Total Views: {}, Total Play Time: {}", videoId, totalViewCount, totalPlayTime);
 
-        VideoStatEntity videoStatEntity;
-
-        if (latestStatOpt.isPresent()) {
-            videoStatEntity = latestStatOpt.get();
-            videoStatEntity.setViewCount(totalViewCount);
-            videoStatEntity.setTotalPlayTime(totalPlayTime);
-        } else {
-            videoStatEntity = new VideoStatEntity();
-            videoStatEntity.setVideoId(videoEntity);
-            videoStatEntity.setViewCount(totalViewCount);
-            videoStatEntity.setTotalPlayTime(totalPlayTime);
-            videoStatEntity.setCreatedAt(LocalDateTime.now());
-        }
+        // 매번 새로운 통계 데이터 생성
+        VideoStatEntity videoStatEntity = new VideoStatEntity();
+        videoStatEntity.setVideoId(videoEntity);
+        videoStatEntity.setViewCount(totalViewCount);
+        videoStatEntity.setTotalPlayTime(totalPlayTime);
+        videoStatEntity.setCreatedAt(LocalDateTime.now());
 
         videoStatRepository.save(videoStatEntity);
+        logger.info("Saved VideoStatEntity: {}", videoStatEntity);
     }
 
     @Transactional
@@ -96,6 +92,8 @@ public class VideoStatService {
 
         // 시청 기록이 있는 동영상만 조회
         List<Long> videoIdsWithPlays = videoPlayRepository.findDistinctVideoEntity_IdByCreatedAtBetween(startOfDay, endOfDay);
+
+        logger.info("Video IDs with plays: {}", videoIdsWithPlays);
 
         for (Long videoId : videoIdsWithPlays) {
             createVideoStatistics(videoId);

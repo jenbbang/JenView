@@ -15,9 +15,8 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @Table(name = "ad_calculate")
-@IdClass(AdCalcId.class) // Corrected to use Ad_SettlementId
+@IdClass(AdCalcId.class)
 public class AdCalcEntity {
-
 
     @Id
     @CreationTimestamp
@@ -31,9 +30,9 @@ public class AdCalcEntity {
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "video_id", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "video_id", nullable = false)
     private VideoEntity videoId;
 
     @Column(name = "ad_settlement", nullable = false)
-    private double adSettlement;
+    private long adSettlement;
 }

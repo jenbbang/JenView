@@ -24,9 +24,9 @@ public class VideoCalcEntity {
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "video_id", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "video_id", nullable = false)
     private VideoEntity videoId;
 
     @Column(name = "video_settlement", nullable = false)
-    private double videoSettlement;
+    private long videoSettlement;
 }

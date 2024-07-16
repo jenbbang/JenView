@@ -9,12 +9,12 @@ import java.util.List;
 @Setter
 public class SettlementResponseDTO {
     private Long userId;
-    private double totalAmount;
+    private long totalAmount;
     private String start;
     private String end;
-    private List<VideoCalcDTO> videoCalculations;
+    private List<CalcDTO> videoCalculations;
 
-    public SettlementResponseDTO(Long userId, double totalAmount, String start, String end, List<VideoCalcDTO> videoCalculations) {
+    public SettlementResponseDTO(Long userId, long totalAmount, String start, String end, List<CalcDTO> videoCalculations) {
         this.userId = userId;
         this.totalAmount = totalAmount;
         this.start = start;
