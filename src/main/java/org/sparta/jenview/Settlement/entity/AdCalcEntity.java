@@ -1,4 +1,4 @@
-package org.sparta.jenview.statistics.entity;
+package org.sparta.jenview.Settlement.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -14,9 +14,15 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "ad_statistics")
-@IdClass(AdStatId.class)
-public class AdStatEntity {
+@Table(name = "ad_calculate")
+@IdClass(AdCalcId.class) // Corrected to use Ad_SettlementId
+public class AdCalcEntity {
+
+
+    @Id
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
@@ -25,16 +31,9 @@ public class AdStatEntity {
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "video_id", nullable = false)
+    @JoinColumn(name = "video_id", nullable = false, insertable = false, updatable = false)
     private VideoEntity videoId;
 
-    @Id
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "view_count", nullable = false)
-    private int viewCount;
-
-
+    @Column(name = "ad_settlement", nullable = false)
+    private double adSettlement;
 }

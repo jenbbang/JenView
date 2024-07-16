@@ -36,4 +36,5 @@ public class VideoStatEntity {
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
+
 }

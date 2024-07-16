@@ -21,4 +21,6 @@ public interface VideoStatRepository extends JpaRepository<VideoStatEntity, Vide
 
     @Query("SELECT v FROM VideoStatEntity v WHERE v.createdAt BETWEEN :start AND :end ORDER BY v.totalPlayTime DESC")
     List<VideoStatEntity> findTop5ByTotalPlayTime(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end, Pageable pageable);
+
+    List<VideoStatEntity> findByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
 }

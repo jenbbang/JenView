@@ -69,8 +69,8 @@ public class AdStatService {
                 .collect(Collectors.groupingBy(adPlay -> adPlay.getVideoId().getId()))
                 .forEach((videoId, adPlays) -> {
                     AdStatEntity adStatEntity = new AdStatEntity();
-                    adStatEntity.setAdId(adId);
-                    adStatEntity.setVideoId(videoId);
+                    adStatEntity.setAdId(adEntity);
+                    adStatEntity.setVideoId(videoRepository.findById(videoId).get());
                     adStatEntity.setViewCount(adPlays.size());
                     adStatEntity.setCreatedAt(LocalDateTime.now());
 
