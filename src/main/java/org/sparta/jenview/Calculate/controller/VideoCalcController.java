@@ -1,7 +1,7 @@
-package org.sparta.jenview.Settlement.controller;
+package org.sparta.jenview.Calculate.controller;
 
-import org.sparta.jenview.Settlement.dto.SettlementResponseDTO;
-import org.sparta.jenview.Settlement.service.CalcService;
+import org.sparta.jenview.Calculate.dto.SettlementResponseDTO;
+import org.sparta.jenview.Calculate.service.VideoCalcService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/calc")
 public class VideoCalcController {
 
-    private final CalcService calcService;
+    private final VideoCalcService calcService;
 
     @Autowired
-    public VideoCalcController(CalcService calcService) {
+    public VideoCalcController(VideoCalcService calcService) {
         this.calcService = calcService;
     }
 

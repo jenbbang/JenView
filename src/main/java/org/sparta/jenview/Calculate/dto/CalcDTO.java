@@ -1,4 +1,4 @@
-package org.sparta.jenview.Settlement.dto;
+package org.sparta.jenview.Calculate.dto;
 
 import lombok.Getter;
 import lombok.Setter;

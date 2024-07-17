@@ -1,6 +1,6 @@
-package org.sparta.jenview.Settlement.mapper;
+package org.sparta.jenview.Calculate.mapper;
 
-import org.sparta.jenview.Settlement.dto.CalcDTO;
+import org.sparta.jenview.Calculate.dto.CalcDTO;
 import org.sparta.jenview.statistics.entity.VideoStatEntity;
 import org.springframework.stereotype.Component;
 

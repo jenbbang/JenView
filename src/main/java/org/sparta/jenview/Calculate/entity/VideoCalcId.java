@@ -1,4 +1,4 @@
-package org.sparta.jenview.Settlement.entity;
+package org.sparta.jenview.Calculate.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

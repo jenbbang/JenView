@@ -64,15 +64,16 @@ public class AdStatService {
 
         int totalViewCount = adPlayEntities.size();
 
-        // adPlayEntities에서 비디오 ID를 추출하여 각 비디오에 대한 통계 생성
+        LocalDateTime createdAt = LocalDateTime.now();
+
         adPlayEntities.stream()
                 .collect(Collectors.groupingBy(adPlay -> adPlay.getVideoId().getId()))
                 .forEach((videoId, adPlays) -> {
                     AdStatEntity adStatEntity = new AdStatEntity();
                     adStatEntity.setAdId(adEntity);
-                    adStatEntity.setVideoId(videoRepository.findById(videoId).get());
+                    adStatEntity.setVideoId(videoRepository.findById(videoId).orElseThrow(() -> new RuntimeException("Video not found with id " + videoId)));
+                    adStatEntity.setCreatedAt(createdAt);
                     adStatEntity.setViewCount(adPlays.size());
-                    adStatEntity.setCreatedAt(LocalDateTime.now());
 
                     adStatRepository.save(adStatEntity);
                 });

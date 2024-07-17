@@ -1,4 +1,4 @@
-package org.sparta.jenview.Settlement.entity;
+package org.sparta.jenview.Calculate.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -18,13 +18,12 @@ import java.time.LocalDateTime;
 public class VideoCalcEntity {
 
     @Id
-    @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "video_id", nullable = false)
+        @JoinColumn(name = "video_id", nullable = false)
     private VideoEntity videoId;
 
     @Column(name = "video_settlement", nullable = false)

@@ -1,4 +1,4 @@
-package org.sparta.jenview.Settlement.entity;
+package org.sparta.jenview.Calculate.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
 public class AdCalcEntity {
 
     @Id
-    @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

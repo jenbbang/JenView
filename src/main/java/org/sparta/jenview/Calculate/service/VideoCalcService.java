@@ -1,15 +1,15 @@
-package org.sparta.jenview.Settlement.service;
+package org.sparta.jenview.Calculate.service;
 
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sparta.jenview.Settlement.dto.CalcDTO;
-import org.sparta.jenview.Settlement.dto.SettlementResponseDTO;
-import org.sparta.jenview.Settlement.entity.AdCalcEntity;
-import org.sparta.jenview.Settlement.entity.VideoCalcEntity;
-import org.sparta.jenview.Settlement.mapper.CalcMapper;
-import org.sparta.jenview.Settlement.repository.AdCalcRepository;
-import org.sparta.jenview.Settlement.repository.VideoCalcRepository;
+import org.sparta.jenview.Calculate.dto.CalcDTO;
+import org.sparta.jenview.Calculate.dto.SettlementResponseDTO;
+import org.sparta.jenview.Calculate.entity.AdCalcEntity;
+import org.sparta.jenview.Calculate.entity.VideoCalcEntity;
+import org.sparta.jenview.Calculate.mapper.CalcMapper;
+import org.sparta.jenview.Calculate.repository.AdCalcRepository;
+import org.sparta.jenview.Calculate.repository.VideoCalcRepository;
 import org.sparta.jenview.statistics.entity.AdStatEntity;
 import org.sparta.jenview.statistics.entity.VideoStatEntity;
 import org.sparta.jenview.statistics.repository.AdStatRepository;
@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
-public class CalcService {
+public class VideoCalcService {
 
     private static final Logger logger = LoggerFactory.getLogger(CalcService.class);
 
@@ -40,7 +40,7 @@ public class CalcService {
     private final AdCalcRepository adCalcRepository;
 
     @Autowired
-    public CalcService(AdCalcRepository adCalcRepository, VideoCalcRepository videoCalcRepository, VideoStatRepository videoStatRepository, AdStatRepository adStatRepository, CalcMapper calcMapper) {
+    public VideoCalcService(AdCalcRepository adCalcRepository, VideoCalcRepository videoCalcRepository, VideoStatRepository videoStatRepository, AdStatRepository adStatRepository, CalcMapper calcMapper) {
         this.videoCalcRepository = videoCalcRepository;
         this.videoStatRepository = videoStatRepository;
         this.adStatRepository = adStatRepository;
@@ -138,95 +138,6 @@ public class CalcService {
         }).sum();
     }
 
-    @Transactional
-    public void calculateWeeklySettlement() {
-        LocalDate now = LocalDate.now();
-        LocalDate startOfWeek = now.with(DayOfWeek.SUNDAY);
-        LocalDate endOfWeek = startOfWeek.plusDays(6);
-        LocalDateTime startOfWeekDateTime = startOfWeek.atStartOfDay(ZoneId.systemDefault()).toLocalDateTime();
-        LocalDateTime endOfWeekDateTime = endOfWeek.atTime(LocalTime.MAX);
-
-        // 오늘 날짜 이전에 정산된 데이터가 없으면 해당 주의 시작일부터 종료일까지 중 실제 데이터가 있는 첫 번째 날짜부터 종료일까지 계산
-        List<VideoStatEntity> stats = videoStatRepository.findByCreatedAtBetween(startOfWeekDateTime, endOfWeekDateTime);
-
-        if (stats.isEmpty()) {
-            return;
-        }
-
-        // 실제 데이터가 있는 첫 번째 날짜 찾기
-        LocalDateTime actualStartDateTime = stats.stream()
-                .min(Comparator.comparing(VideoStatEntity::getCreatedAt))
-                .map(VideoStatEntity::getCreatedAt)
-                .orElse(startOfWeekDateTime);
-
-        for (VideoStatEntity stat : stats) {
-            long totalViews = stat.getViewCount();
-            long settlement = calculateSettlement(totalViews);
-            long adCount = getAdCountFromAdStats(stat.getVideoId().getId(), actualStartDateTime, endOfWeekDateTime);
-            long adRevenue = getAdRevenueFromAdStats(stat.getVideoId().getId(), actualStartDateTime, endOfWeekDateTime);
-
-            // 두 개를 더한 후 1원 단위 이하 절사
-            long totalSettlement = Math.floorDiv(settlement + adRevenue, 1);
-
-            // 비디오 정산 저장
-            VideoCalcEntity videoCalcEntity = new VideoCalcEntity();
-            videoCalcEntity.setVideoId(stat.getVideoId());
-            videoCalcEntity.setVideoSettlement(settlement);
-            videoCalcEntity.setCreatedAt(LocalDateTime.now());
-            logger.info("Saving VideoCalcEntity: {}", videoCalcEntity);
-            videoCalcRepository.save(videoCalcEntity);
-
-            // 광고 정산 저장
-            List<AdStatEntity> adStats = adStatRepository.findByVideoIdIdAndCreatedAtBetween(stat.getVideoId().getId(), actualStartDateTime, endOfWeekDateTime);
-            for (AdStatEntity adStat : adStats) {
-                AdCalcEntity adCalcEntity = new AdCalcEntity();
-                adCalcEntity.setAdId(adStat.getAdId());
-                adCalcEntity.setVideoId(stat.getVideoId());
-                adCalcEntity.setAdSettlement(adRevenue);
-                adCalcEntity.setCreatedAt(LocalDateTime.now());
-                logger.info("Saving AdCalcEntity: {}", adCalcEntity);
-                adCalcRepository.save(adCalcEntity);
-            }
-        }
-    }
-
-    @Transactional
-    public void calculateMonthlySettlement() {
-        LocalDate now = LocalDate.now();
-        LocalDateTime startOfMonth = now.withDayOfMonth(1).atStartOfDay(ZoneId.systemDefault()).toLocalDateTime();
-        LocalDateTime endOfMonth = now.withDayOfMonth(now.lengthOfMonth()).atTime(LocalTime.MAX);
-        List<VideoStatEntity> stats = videoStatRepository.findByCreatedAtBetween(startOfMonth, endOfMonth);
-
-        for (VideoStatEntity stat : stats) {
-            long totalViews = stat.getViewCount();
-            long settlement = calculateSettlement(totalViews);
-            long adCount = getAdCountFromAdStats(stat.getVideoId().getId(), startOfMonth, endOfMonth);
-            long adRevenue = getAdRevenueFromAdStats(stat.getVideoId().getId(), startOfMonth, endOfMonth);
-
-            // 두 개를 더한 후 1원 단위 이하 절사
-            long totalSettlement = Math.floorDiv(settlement + adRevenue, 1);
-
-            // 비디오 정산 저장
-            VideoCalcEntity videoCalcEntity = new VideoCalcEntity();
-            videoCalcEntity.setVideoId(stat.getVideoId());
-            videoCalcEntity.setVideoSettlement(settlement);
-            videoCalcEntity.setCreatedAt(LocalDateTime.now());
-            logger.info("Saving VideoCalcEntity: {}", videoCalcEntity);
-            videoCalcRepository.save(videoCalcEntity);
-
-            // 광고 정산 저장
-            List<AdStatEntity> adStats = adStatRepository.findByVideoIdIdAndCreatedAtBetween(stat.getVideoId().getId(), startOfMonth, endOfMonth);
-            for (AdStatEntity adStat : adStats) {
-                AdCalcEntity adCalcEntity = new AdCalcEntity();
-                adCalcEntity.setAdId(adStat.getAdId());
-                adCalcEntity.setVideoId(stat.getVideoId());
-                adCalcEntity.setAdSettlement(adRevenue);
-                adCalcEntity.setCreatedAt(LocalDateTime.now());
-                logger.info("Saving AdCalcEntity: {}", adCalcEntity);
-                adCalcRepository.save(adCalcEntity);
-            }
-        }
-    }
 
     public SettlementResponseDTO getDailySettlement() {
         LocalDateTime startOfDay = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toLocalDateTime();
