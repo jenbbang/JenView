@@ -38,5 +38,4 @@ public class AdPlayEntity {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-
 }

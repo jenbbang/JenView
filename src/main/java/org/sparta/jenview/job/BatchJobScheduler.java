@@ -18,7 +18,8 @@ public class BatchJobScheduler {
     @Autowired
     Job videoAndAdStatJob;
 
-    @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Seoul")
+    //    @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 26 20 * * ?", zone = "Asia/Seoul")
     public void runBatchJob() {
         try {
             JobParameters jobParameters = new JobParametersBuilder()
@@ -26,6 +27,7 @@ public class BatchJobScheduler {
                     .toJobParameters();
             jobLauncher.run(videoAndAdStatJob, jobParameters);
         } catch (Exception e) {
+            e.printStackTrace(); // 예외가 발생했을 때 스택 트레이스를 출력
         }
     }
 }

@@ -65,9 +65,6 @@ dependencies {
     // Lombok: 보일러플레이트 코드를 줄이기 위한 라이브러리 (컴파일 타임 전용)
     compileOnly 'org.projectlombok:lombok'
 
-    // Spring Boot DevTools: 개발 중 자동 재시작 및 라이브 리로드
-//    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-
     // Spring Boot Docker Compose: Docker Compose 기반 서비스 관리를 위한 도구
     developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
 
