@@ -15,25 +15,25 @@ JenView는 동영상과 광고를 관리하고, 동영상 및 광고 시청 기�
 - 매일 자정에 통계 및 정산 작업 수행
 
 ## 기술 스택
-- **언어**: Java 21 이상
-- **DB**: MySQL, Postgres, MongoDB 등 무관
+- **언어**: Java 21
+- **DB**: MySQL
 - **빌드 도구**: Gradle
-- **프레임워크**: Spring Boot 3.XX
+- **프레임워크**: Spring Boot 3.3.0
 - **컨테이너화 도구**: Docker / Docker Compose
-- **배치 처리**: Spring Batch
+- **배치 처리**: Spring Batch 5.0
 - **인증 방식**: JWT (JSON Web Token)
 - **통신 방식**: HTTP Request / Response
 
 ## 아키텍처
 프로젝트의 전체 구조와 구성 요소 간의 상호작용을 나타내는 아키텍처 다이어그램입니다.
-<p align="center">
-<img src="https://example.com/architecture_diagram.png" alt="Architecture Diagram">
+<p align="left">
+
 </p>
 
 ## ERD (Entity-Relationship Diagram)
 데이터베이스 테이블과 그 관계를 보여주는 ERD입니다.
-<p align="center">
-<img src="https://example.com/erd_diagram.png" alt="ERD Diagram">
+<p align="left">
+<img src="https://postfiles.pstatic.net/MjAyNDA3MjBfMTEz/MDAxNzIxNDE3MTI1ODk2.cFyETvF3vw2N2n2poNLmPrnGTZkZtaUn501t20LnY7Ag.78qjFwY7zXyNz9KpnFPk9U6kSQAk5lC1eIExU14MALwg.PNG/image.png?type=w773">
 </p>
 
 ## 프로젝트 설정
@@ -60,7 +60,7 @@ JenView는 동영상과 광고를 관리하고, 동영상 및 광고 시청 기�
 ## 설치 및 실행 방법
 
 ### 사전 요구 사항
-- JDK 21 이상
+- JDK 21
 - Gradle
 - Docker 및 Docker Compose
 
