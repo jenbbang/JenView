@@ -2,26 +2,29 @@
 <img src="https://postfiles.pstatic.net/MjAyNDA3MThfMTQy/MDAxNzIxMjk2MzY4NjMw.PdpD0S4A2VNOGz8el2oXHkYHfqGPCl6cBk96pIce4S4g.CWLBze_8RI8SZiXxZlNDdb9o1Gx3kn_8kgzlNAy5LuQg.PNG/Jen_View.png?type=w773">
 </p>
 
-# JenView 프로젝트
+#  JenView 프로젝트
+#### 📅 2024년 6월 ~ 2024년 7월
 
-## 개요
+
+
+## 📢 개요
 JenView는 동영상과 광고를 관리하고, 동영상 및 광고 시청 기록을 바탕으로 통계를 생성하는 시스템입니다. </br>
 동영상 및 광고의 재생 기록을 관리하고, Spring Batch를 사용하여 매일 자정에 통계 및 정산 작업을 수행합니다.
 
-## 주요 기능
+## 🛠️ 주요 기능
 - 동영상 및 광고 관리
 - 동영상 및 광고 시청 기록 관리
 - 동영상 및 광고 통계 생성
 - 매일 자정에 통계 및 정산 작업 수행
 
-## 기술 스택
-- **언어**: Java 21
-- **DB**: MySQL
-- **빌드 도구**: Gradle
-- **프레임워크**: Spring Boot 3.3.0
-- **컨테이너화 도구**: Docker / Docker Compose
-- **배치 처리**: Spring Batch 5.0
-- **인증 방식**: JWT (JSON Web Token)
+## 🧑‍💻기술 스택
+![Java](https://img.shields.io/badge/Language-Java%2021-007396?style=flat-square&logo=java&logoColor=white)
+![MySQL](https://img.shields.io/badge/DB-MySQL-4479A1?style=flat-square&logo=mysql&logoColor=white)
+![Gradle](https://img.shields.io/badge/Build%20Tool-Gradle-02303A?style=flat-square&logo=gradle&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Framework-Spring%20Boot%203.3.0-6DB33F?style=flat-square&logo=spring-boot&logoColor=white)
+![Docker](https://img.shields.io/badge/Containerization-Docker%20/%20Docker%20Compose-2496ED?style=flat-square&logo=docker&logoColor=white)
+![Spring Batch](https://img.shields.io/badge/Batch%20Processing-Spring%20Batch%205.0-6DB33F?style=flat-square&logo=spring&logoColor=white)
+![JWT](https://img.shields.io/badge/Authentication-JWT%20(JSON%20Web%20Token)-000000?style=flat-square&logo=json-web-tokens&logoColor=white)
 
 ## 아키텍처
 프로젝트의 전체 구조와 구성 요소 간의 상호작용을 나타내는 아키텍처 다이어그램입니다.
@@ -30,10 +33,40 @@ JenView는 동영상과 광고를 관리하고, 동영상 및 광고 시청 기�
 </p>
 
 ## ERD (Entity-Relationship Diagram)
-데이터베이스 테이블과 그 관계를 보여주는 ERD입니다.
+<details>
+<summary>데이터베이스 테이블과 그 관계를 보여주는 ERD입니다.</summary>
 <p align="left">
 <img src="https://postfiles.pstatic.net/MjAyNDA3MjBfMTEz/MDAxNzIxNDE3MTI1ODk2.cFyETvF3vw2N2n2poNLmPrnGTZkZtaUn501t20LnY7Ag.78qjFwY7zXyNz9KpnFPk9U6kSQAk5lC1eIExU14MALwg.PNG/image.png?type=w773">
 </p>
+</details>
+
+
+## 📄 프로젝트 하이라이트
+
+### 1. 대용량 데이터 처리 성능 개선
+
+| 단계 | 데이터  | 처리시간 | 개선율 |
+| --- | --- | --- | --- |
+| Test 코드 개선 전 | 1천만 건 | 약 83시간 20분 | 0.00% ↑ |
+| Test 코드 개선 후 | 1천만 건 | 약 22시간 30분 | 73.00% ↓ |
+| Union 쿼리  | 1천만 건 | 3 m 49 s 139 ms | 99.92% ↓ |
+
+- **문제점**
+    - 성능 문제: 대용량 데이터 삽입 시 비효율 발생
+    - 트랜잭션 오버헤드: 개별 `save` 호출로 인한 오버헤드
+
+- **해결 방법**
+    - **배치 처리**: 데이터베이스 삽입을 배치 단위로 처리
+    - **트랜잭션 최적화**: 트랜잭션 오버헤드 최소화
+
+- **결과**
+    - **성능 향상**: 데이터베이스 통신 횟수 감소로 성능 향상
+    - **가독성 증가**: 코드 분리로 가독성 향상
+
+- **쿼리 사용 이유**
+    - **테스트 시간 단축:** 유니온 쿼리 사용으로 테스트 시간이 83시간 20분에서 3분 49초로 단축.
+
+
 
 ## 프로젝트 설정
 <details>
@@ -100,5 +133,8 @@ JenView는 동영상과 광고를 관리하고, 동영상 및 광고 시청 기�
 프로젝트에 포함된 테스트 코드를 실행하여 테스트 데이터를 생성할 수 있습니다:
 ```bash
 ./gradlew test
-
 </details>
+
+
+
+
