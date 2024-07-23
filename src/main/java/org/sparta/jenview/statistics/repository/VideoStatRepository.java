@@ -23,4 +23,5 @@ public interface VideoStatRepository extends JpaRepository<VideoStatEntity, Vide
     List<VideoStatEntity> findTop5ByTotalPlayTime(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end, Pageable pageable);
 
     List<VideoStatEntity> findByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
+
 }

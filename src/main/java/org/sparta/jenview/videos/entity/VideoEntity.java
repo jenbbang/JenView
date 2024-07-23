@@ -53,6 +53,4 @@ public class VideoEntity {
     @Column(name = "settled_today", nullable = false)
     private boolean settledToday;
 
-
-
 }

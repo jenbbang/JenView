@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.sparta.jenview.Calculate.service.CalcService;
 import org.sparta.jenview.statistics.service.AdStatService;
 import org.sparta.jenview.statistics.service.VideoStatService;
+import org.sparta.jenview.batch.CustomJobListener;
+import org.sparta.jenview.batch.CustomStepListener;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -14,6 +16,8 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @Slf4j
@@ -26,58 +30,77 @@ public class BatchConfiguration {
                                  @Qualifier("videoStatStep") Step videoStatStep,
                                  @Qualifier("adStatStep") Step adStatStep,
                                  @Qualifier("videoCalcStep") Step videoCalcStep,
-                                 @Qualifier("adCalcStep") Step adCalcStep) {
+                                 @Qualifier("adCalcStep") Step adCalcStep,
+                                 CustomJobListener jobListener) {
         return new JobBuilder("videoAndAdStatJob", jobRepository)
                 .start(videoStatStep)
                 .next(adStatStep)
                 .next(videoCalcStep)
                 .next(adCalcStep)
+                .listener(jobListener)
                 .build();
     }
 
     @Bean
-    public Step videoStatStep(JobRepository jobRepository, PlatformTransactionManager platformTransactionManager, VideoStatService videoStatService) {
+    public Step videoStatStep(JobRepository jobRepository, PlatformTransactionManager platformTransactionManager,
+                              VideoStatService videoStatService, @Qualifier("batchTaskExecutor") TaskExecutor taskExecutor, CustomStepListener stepListener) {
         return new StepBuilder("videoStatStep", jobRepository)
                 .tasklet((contribution, chunkContext) -> {
-                    log.info("Starting videoStatStep");
-                    videoStatService.createStatisticsForAllVideos();
-                    log.info("Finished videoStatStep");
+                    taskExecutor.execute(() -> videoStatService.createStatisticsForAllVideos());
                     return RepeatStatus.FINISHED;
                 }, platformTransactionManager)
+                .taskExecutor(taskExecutor)
+                .listener(stepListener)
                 .build();
     }
 
     @Bean
-    public Step adStatStep(JobRepository jobRepository, PlatformTransactionManager platformTransactionManager, AdStatService adStatService) {
+    public Step adStatStep(JobRepository jobRepository, PlatformTransactionManager platformTransactionManager,
+                           AdStatService adStatService, @Qualifier("batchTaskExecutor") TaskExecutor taskExecutor, CustomStepListener stepListener) {
         return new StepBuilder("adStatStep", jobRepository)
                 .tasklet((contribution, chunkContext) -> {
-                    log.info("Starting adStatStep");
-                    adStatService.createStatisticsForAllAds();
-                    log.info("Finished adStatStep");
+                    taskExecutor.execute(() -> adStatService.createStatisticsForAllAds());
                     return RepeatStatus.FINISHED;
                 }, platformTransactionManager)
+                .taskExecutor(taskExecutor)
+                .listener(stepListener)
                 .build();
     }
 
     @Bean
-    public Step videoCalcStep(JobRepository jobRepository, PlatformTransactionManager platformTransactionManager, CalcService calcService) {
+    public Step videoCalcStep(JobRepository jobRepository, PlatformTransactionManager platformTransactionManager,
+                              CalcService calcService, @Qualifier("batchTaskExecutor") TaskExecutor taskExecutor, CustomStepListener stepListener) {
         return new StepBuilder("videoCalcStep", jobRepository)
                 .tasklet((contribution, chunkContext) -> {
-                    calcService.calculateDailyVideoSettlement();
+                    taskExecutor.execute(() -> calcService.calculateDailyVideoSettlement());
                     return RepeatStatus.FINISHED;
                 }, platformTransactionManager)
+                .taskExecutor(taskExecutor)
+                .listener(stepListener)
                 .build();
     }
 
     @Bean
-    public Step adCalcStep(JobRepository jobRepository, PlatformTransactionManager platformTransactionManager, CalcService calcService) {
+    public Step adCalcStep(JobRepository jobRepository, PlatformTransactionManager platformTransactionManager,
+                           CalcService calcService, @Qualifier("batchTaskExecutor") TaskExecutor taskExecutor, CustomStepListener stepListener) {
         return new StepBuilder("adCalcStep", jobRepository)
                 .tasklet((contribution, chunkContext) -> {
-                    log.info("Starting adCalcStep");
-                    calcService.calculateDailyAdSettlement();
-                    log.info("Finished adCalcStep");
+                    taskExecutor.execute(() -> calcService.calculateDailyAdSettlement());
                     return RepeatStatus.FINISHED;
                 }, platformTransactionManager)
+                .taskExecutor(taskExecutor)
+                .listener(stepListener)
                 .build();
+    }
+
+    @Bean(name = "batchTaskExecutor")
+    public ThreadPoolTaskExecutor taskExecutor() {
+        ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
+        taskExecutor.setCorePoolSize(10); // 스레드 풀의 코어 스레드 수
+        taskExecutor.setMaxPoolSize(20); // 최대 스레드 수
+        taskExecutor.setQueueCapacity(25); // 큐 용량
+        taskExecutor.setThreadNamePrefix("BatchThread-");
+        taskExecutor.initialize();
+        return taskExecutor;
     }
 }
