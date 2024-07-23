@@ -2,22 +2,29 @@
 <img src="https://postfiles.pstatic.net/MjAyNDA3MThfMTQy/MDAxNzIxMjk2MzY4NjMw.PdpD0S4A2VNOGz8el2oXHkYHfqGPCl6cBk96pIce4S4g.CWLBze_8RI8SZiXxZlNDdb9o1Gx3kn_8kgzlNAy5LuQg.PNG/Jen_View.png?type=w773">
 </p>
 
-#  JenView 프로젝트
+# 🎬 JenView 🎬
 #### 📅 2024년 6월 ~ 2024년 7월
 
 
 
 ## 📢 개요
-JenView는 동영상과 광고를 관리하고, 동영상 및 광고 시청 기록을 바탕으로 통계를 생성하는 시스템입니다. </br>
-동영상 및 광고의 재생 기록을 관리하고, Spring Batch를 사용하여 매일 자정에 통계 및 정산 작업을 수행합니다.
+JenView는 대용량 데이터를 처리하며 동영상과 광고를 관리하는 시스템입니다. </br>
+동영상 및 광고 시청 기록을 바탕으로 통계를 생성하고, 매일 자정에 Spring Batch를 사용하여 통계 및 정산 작업을 수행합니다 </br>
 
-## 🛠️ 주요 기능
-- 동영상 및 광고 관리
-- 동영상 및 광고 시청 기록 관리
-- 동영상 및 광고 통계 생성
-- 매일 자정에 통계 및 정산 작업 수행
 
-## 🧑‍💻기술 스택
+## 💥 주요 기능
+  
+| 기능 영역 | 세부 기능 |
+| --- | --- |
+| 고객 포털 | 👤 **회원 가입** <br> 🔐 **로그인** <br> 🚪 **로그아웃** |
+| 동영상 및 광고 관리 | 📹 **동영상 관리**: 등록, 재생, 정지 <br> 📢 **광고 관리**: 등록, 배치 |
+| 시청 기록 관리 | 📈 **동영상 시청 기록 관리** <br> 📊 **광고 시청 기록 관리** |
+| 통계 생성 및 정산 | 📊 **동영상 및 광고 통계 생성**: 일간/주간/월간 Top 5 (조회수, 재생시간) <br> ⏰ **정산 작업**: 매일 자정에 Spring Batch를 사용하여 통계 및 정산 작업 수행 |
+
+
+
+
+## 🛠️ 기술 스택
 ![Java](https://img.shields.io/badge/Language-Java%2021-007396?style=flat-square&logo=java&logoColor=white)
 ![MySQL](https://img.shields.io/badge/DB-MySQL-4479A1?style=flat-square&logo=mysql&logoColor=white)
 ![Gradle](https://img.shields.io/badge/Build%20Tool-Gradle-02303A?style=flat-square&logo=gradle&logoColor=white)
@@ -43,13 +50,20 @@ JenView는 동영상과 광고를 관리하고, 동영상 및 광고 시청 기�
 
 ## 📄 프로젝트 하이라이트
 
-### 1. 대용량 데이터 처리 성능 개선
+### 1. 대용량 데이터 처리 성능 개선 (99.92% 향상)
 
+#### 1.1 최종 성능 결과  
+- 1천만 데이터 기준 결과 : 3 m 49 s 139 ms
+
+#### 1.2 성능 개선
+  
 | 단계 | 데이터  | 처리시간 | 개선율 |
 | --- | --- | --- | --- |
 | Test 코드 개선 전 | 1천만 건 | 약 83시간 20분 | 0.00% ↑ |
 | Test 코드 개선 후 | 1천만 건 | 약 22시간 30분 | 73.00% ↓ |
 | Union 쿼리  | 1천만 건 | 3 m 49 s 139 ms | 99.92% ↓ |
+
+#### 1.3 개선 내용 
 
 - **문제점**
     - 성능 문제: 대용량 데이터 삽입 시 비효율 발생
@@ -67,34 +81,21 @@ JenView는 동영상과 광고를 관리하고, 동영상 및 광고 시청 기�
     - **테스트 시간 단축:** 유니온 쿼리 사용으로 테스트 시간이 83시간 20분에서 3분 49초로 단축.
 
 
+## 🔥 트러블 슈팅 
 
-## 프로젝트 설정
-<details>
-    <summary>프로젝트 설정</summary>
-    
-### Docker 설정
-- **Dockerfile**을 작성하여 애플리케이션 실행 환경 정의
-- **Docker Compose**를 통해 애플리케이션 및 데이터베이스 컨테이너 관리
+## 💭 기술적 의사 결정 
 
-### Spring Boot 설정
-- **Spring Initializr**를 사용하여 프로젝트 생성
-- 필요한 의존성을 **Gradle**에 추가
+## ⚙️ 프로젝트 설정
+| 설정 영역 | 세부 내용 |
+| --- | --- |
+| 🐳 Docker 설정 | Dockerfile을 작성하여 애플리케이션 실행 환경 정의 <br> Docker Compose를 통해 애플리케이션 및 데이터베이스 컨테이너 관리 |
+| 🌱 Spring Boot 설정 | Spring Initializr를 사용하여 프로젝트 생성 <br> 필요한 의존성을 Gradle에 추가 |
+| ⏲️ Spring Batch 설정 | Spring Batch 관련 설정 추가하여 배치 작업 설정 |
+| 🔐 JWT 설정 | JWT를 사용한 인증 및 권한 부여 설정 |
+| 🗄️ 데이터베이스 설정 | 애플리케이션 프로퍼티 파일을 통해 데이터베이스 연결 설정 |
+| 🌐 HTTP Request / Response | REST 컨트롤러 작성하여 클라이언트와 서버 간 통신 처리 |
 
-### Spring Batch 설정
-- Spring Batch 관련 설정 추가하여 배치 작업 설정
-
-### JWT 설정
-- JWT를 사용한 인증 및 권한 부여 설정
-
-### 데이터베이스 설정
-- 애플리케이션 프로퍼티 파일을 통해 데이터베이스 연결 설정
-
-### HTTP Request / Response
-- REST 컨트롤러 작성하여 클라이언트와 서버 간 통신 처리
-
-</details>
-
-## 설치 및 실행 방법
+## ⚙️ 설치 및 실행 방법
 <details>
 
 <summary>설치 및 실행 방법</summary>
