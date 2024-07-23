@@ -59,8 +59,8 @@ JenView는 대용량 데이터를 처리하며 동영상과 광고를 관리하�
   
 | 단계 | 데이터  | 처리시간 | 개선율 |
 | --- | --- | --- | --- |
-| Test 코드 개선 전 | 1천만 건 | 약 83시간 20분 | 0.00% ↑ |
-| Test 코드 개선 후 | 1천만 건 | 약 22시간 30분 | 73.00% ↓ |
+| Test 코드 개선 전 | 1천만 건 | 약 83시간 20분 추정 | 0.00% ↑ |
+| Test 코드 개선 후 | 1천만 건 | 약 22시간 30분 추정 | 73.00% ↓ |
 | Union 쿼리  | 1천만 건 | 3 m 49 s 139 ms | 99.92% ↓ |
 
 #### 1.3 개선 내용 
@@ -81,9 +81,9 @@ JenView는 대용량 데이터를 처리하며 동영상과 광고를 관리하�
     - **테스트 시간 단축:** 유니온 쿼리 사용으로 테스트 시간이 83시간 20분에서 3분 49초로 단축.
 
 
-## 🔥 트러블 슈팅 
+### 🔥 트러블 슈팅 
 
-## 💭 기술적 의사 결정 
+### 💭 기술적 의사 결정 
 
 ## ⚙️ 프로젝트 설정
 | 설정 영역 | 세부 내용 |
@@ -96,46 +96,40 @@ JenView는 대용량 데이터를 처리하며 동영상과 광고를 관리하�
 | 🌐 HTTP Request / Response | REST 컨트롤러 작성하여 클라이언트와 서버 간 통신 처리 |
 
 ## ⚙️ 설치 및 실행 방법
-<details>
-
-<summary>설치 및 실행 방법</summary>
-
 ### 사전 요구 사항
-- JDK 21
-- Gradle
-- Docker 및 Docker Compose
+
+![JDK 21](https://img.shields.io/badge/JDK-21-blue)
+![Gradle](https://img.shields.io/badge/Build%20Tool-Gradle-02303A?style=flat-square&logo=gradle&logoColor=white)
+![MySQL](https://img.shields.io/badge/DB-MySQL-4479A1?style=flat-square&logo=mysql&logoColor=white)
+![Docker](https://img.shields.io/badge/Containerization-Docker%20/%20Docker%20Compose-2496ED?style=flat-square&logo=docker&logoColor=white)
 
 ### 설치
-1. 프로젝트를 클론합니다:
+1. 프로젝트를 클론
     ```bash
     git clone https://github.com/yourusername/JenView.git
     cd JenView
     ```
 
-2. 의존성을 설치합니다:
+2. 의존성을 설치
     ```bash
     ./gradlew clean build
     ```
 
-3. Docker 컨테이너를 실행합니다:
+3. Docker 컨테이너를 실행
     ```bash
     docker-compose up -d
     ```
 
-4. 애플리케이션을 실행합니다:
+4. 애플리케이션을 실행
     ```bash
     ./gradlew bootRun
     ```
-
-### 데이터베이스 설정
-기본적으로 MySQL, Postgres, MongoDB 등 다양한 데이터베이스를 지원합니다. 데이터베이스 연결 설정은 `application.properties` 파일을 통해 구성합니다.
-
+    
 ### 테스트 데이터 생성
-프로젝트에 포함된 테스트 코드를 실행하여 테스트 데이터를 생성할 수 있습니다:
+프로젝트에 포함된 테스트 코드를 실행 및 생성 
 ```bash
 ./gradlew test
-</details>
-
+```
 
 
 
