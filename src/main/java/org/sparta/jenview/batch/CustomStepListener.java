@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CustomStepListener implements StepExecutionListener {
-
     @Override
     public void beforeStep(StepExecution stepExecution) {
         System.out.println("Step " + stepExecution.getStepName() + " 시작");

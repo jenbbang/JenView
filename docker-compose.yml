@@ -39,8 +39,14 @@ services:
       MYSQL_PASSWORD: ${DB_PASSWORD}
     volumes:
       - ./db-data:/var/lib/mysql
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: '4'       # CPU 제한 설정
+#          memory: 4096M   # 메모리 제한 설정
     networks:
       - app-network
+
 
   redis:
     image: redis
