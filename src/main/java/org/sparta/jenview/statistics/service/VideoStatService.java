@@ -1,5 +1,7 @@
 package org.sparta.jenview.statistics.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sparta.jenview.plays.entity.VideoPlayEntity;
 import org.sparta.jenview.plays.repository.VideoPlayRepository;
 import org.sparta.jenview.statistics.dto.VideoStatDTO;
@@ -19,10 +21,11 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+
 
 @Service
 public class VideoStatService {
@@ -60,6 +63,32 @@ public class VideoStatService {
                 .collect(Collectors.toList());
     }
 
+
+    @Transactional
+    public void createStatisticsForAllVideos() {
+        LocalDateTime startOfDay = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDateTime endOfDay = LocalDate.now().atTime(LocalTime.MAX);
+
+        logger.info("Fetching video IDs with plays between {} and {}", startOfDay, endOfDay);
+
+        long startQueryTime = System.currentTimeMillis();
+        List<Long> videoIdsWithPlays = videoPlayRepository.findDistinctVideoEntity_IdByCreatedAtBetween(startOfDay, endOfDay);
+        long endQueryTime = System.currentTimeMillis();
+        logger.info("Query for video IDs took {} ms", (endQueryTime - startQueryTime)); // 쿼리 실행 시간 로깅
+
+        logger.info("Found {} video IDs with plays", videoIdsWithPlays.size()); // 로깅 추가
+
+        if (videoIdsWithPlays.isEmpty()) {
+            logger.warn("No video plays found for today."); // 데이터가 없을 경우 경고 로그
+            return; // 데이터가 없을 경우 바로 리턴
+        }
+
+        for (Long videoId : videoIdsWithPlays) {
+            logger.info("Processing video ID: {}", videoId); // 개별 비디오 ID 로깅 추가
+            createVideoStatistics(videoId);
+        }
+    }
+
     public void createVideoStatistics(Long videoId) {
         VideoEntity videoEntity = videoRepository.findById(videoId)
                 .orElseThrow(() -> new RuntimeException("Video not found with id " + videoId));
@@ -67,12 +96,22 @@ public class VideoStatService {
         LocalDateTime startOfDay = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toLocalDateTime();
         LocalDateTime endOfDay = LocalDate.now().atTime(LocalTime.MAX);
 
+        long startQueryTime = System.currentTimeMillis();
         List<VideoPlayEntity> videoPlayEntities = videoPlayRepository.findByVideoEntity_IdAndCreatedAtBetween(videoId, startOfDay, endOfDay);
+        long endQueryTime = System.currentTimeMillis();
+        logger.info("Query for video plays for video ID {} took {} ms", videoId, (endQueryTime - startQueryTime)); // 쿼리 실행 시간 로깅
+
+        logger.info("Processing video ID: {}. Found {} play records", videoId, videoPlayEntities.size()); // 로깅 추가
+
+        if(videoPlayEntities.isEmpty()) {
+            logger.warn("No play records found for video ID: {}", videoId); // 시청 기록이 없을 경우 경고 로그
+            return; // 시청 기록이 없을 경우 바로 리턴
+        }
 
         int totalViewCount = videoPlayEntities.size();
         long totalPlayTime = videoPlayEntities.stream().mapToLong(VideoPlayEntity::getLastPlayedTime).sum();
 
-        logger.info("Video ID: {}, Total Views: {}, Total Play Time: {}", videoId, totalViewCount, totalPlayTime);
+        logger.info("Video ID: {}, Total Views: {}, Total Play Time: {}", videoId, totalViewCount, totalPlayTime); // 로깅 추가
 
         // 매번 새로운 통계 데이터 생성
         VideoStatEntity videoStatEntity = new VideoStatEntity();
@@ -82,21 +121,6 @@ public class VideoStatService {
         videoStatEntity.setCreatedAt(LocalDateTime.now());
 
         videoStatRepository.save(videoStatEntity);
-        logger.info("Saved VideoStatEntity: {}", videoStatEntity);
-    }
-
-    @Transactional
-    public void createStatisticsForAllVideos() {
-        LocalDateTime startOfDay = LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toLocalDateTime();
-        LocalDateTime endOfDay = LocalDate.now().atTime(LocalTime.MAX);
-
-        // 시청 기록이 있는 동영상만 조회
-        List<Long> videoIdsWithPlays = videoPlayRepository.findDistinctVideoEntity_IdByCreatedAtBetween(startOfDay, endOfDay);
-
-        logger.info("Video IDs with plays: {}", videoIdsWithPlays);
-
-        for (Long videoId : videoIdsWithPlays) {
-            createVideoStatistics(videoId);
-        }
+        logger.info("Saved VideoStatEntity: {}", videoStatEntity); // 로깅 추가
     }
 }

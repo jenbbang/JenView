@@ -19,7 +19,7 @@
 //    Job videoAndAdStatJob;
 //
 //    //    @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Seoul")
-////    @Scheduled(cron = "0 26 20 * * ?", zone = "Asia/Seoul")
+//    @Scheduled(cron = "0 26 20 * * ?", zone = "Asia/Seoul")
 //    public void runBatchJob() {
 //        try {
 //            JobParameters jobParameters = new JobParametersBuilder()

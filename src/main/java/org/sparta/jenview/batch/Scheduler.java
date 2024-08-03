@@ -27,15 +27,16 @@ public class Scheduler {
     private final Job job1;
     private final Job job2;
     private final Job videoAndAdStatJob;
-    private final TaskExecutor taskExecutor;
+    //    private final TaskExecutor taskExecutor;
     private final JdbcTemplate jdbcTemplate;
 
-    public Scheduler(JobLauncher jobLauncher, Job job1, Job job2, Job videoAndAdStatJob, @Qualifier("batchTaskExecutor") TaskExecutor taskExecutor, JdbcTemplate jdbcTemplate) {
+    //    public Scheduler(JobLauncher jobLauncher, Job job1, Job job2, Job videoAndAdStatJob, @Qualifier("batchTaskExecutor") TaskExecutor taskExecutor, JdbcTemplate jdbcTemplate) {
+    public Scheduler(JobLauncher jobLauncher, Job job1, Job job2, Job videoAndAdStatJob, JdbcTemplate jdbcTemplate) {
         this.jobLauncher = jobLauncher;
         this.job1 = job1;
         this.job2 = job2;
         this.videoAndAdStatJob = videoAndAdStatJob;
-        this.taskExecutor = taskExecutor;
+//        this.taskExecutor = taskExecutor;
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -57,6 +58,8 @@ public class Scheduler {
                 Thread.sleep(100);
             }
 
+            // 병렬 처리 주석 처리 시작
+            /*
             System.out.println("[병렬] 잡 실행 시작\n");
 
             List<Runnable> tasks = new ArrayList<>();
@@ -74,6 +77,7 @@ public class Scheduler {
             }
 
             latch.await();
+            */
 
             printSummary();
 
@@ -105,10 +109,13 @@ public class Scheduler {
         if (sequentialJobCount > 0) {
             System.out.println("순차 총 소요시간: " + sequentialTotalTime + " ms");
         }
+        // 병렬 처리 요약 주석 처리 시작
+        /*
         if (parallelStartTime > 0 && parallelEndTime > 0) {
             long parallelTotalTime = parallelEndTime - parallelStartTime;
             System.out.println("병렬 총 소요시간: " + parallelTotalTime + " ms");
         }
         System.out.println("순차와 병렬의 총 소요시간 차이: " + (parallelEndTime - parallelStartTime - sequentialTotalTime) * (-1) + " ms");
+        */
     }
 }
