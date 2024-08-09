@@ -5,20 +5,17 @@ import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.CountDownLatch;
 
-import static org.sparta.jenview.batch.CustomJobListener.*;
+import static org.sparta.jenview.batch.CustomJobListener.sequentialJobCount;
+import static org.sparta.jenview.batch.CustomJobListener.sequentialTotalTime;
 
 @Component
 public class Scheduler {
@@ -27,16 +24,16 @@ public class Scheduler {
     private final Job job1;
     private final Job job2;
     private final Job videoAndAdStatJob;
-    //    private final TaskExecutor taskExecutor;
+    private final TaskExecutor taskExecutor;
     private final JdbcTemplate jdbcTemplate;
 
-    //    public Scheduler(JobLauncher jobLauncher, Job job1, Job job2, Job videoAndAdStatJob, @Qualifier("batchTaskExecutor") TaskExecutor taskExecutor, JdbcTemplate jdbcTemplate) {
-    public Scheduler(JobLauncher jobLauncher, Job job1, Job job2, Job videoAndAdStatJob, JdbcTemplate jdbcTemplate) {
+    public Scheduler(JobLauncher jobLauncher, Job job1, Job job2, Job videoAndAdStatJob, @Qualifier("batchTaskExecutor") TaskExecutor taskExecutor, JdbcTemplate jdbcTemplate) {
+//    public Scheduler(JobLauncher jobLauncher, Job job1, Job job2, Job videoAndAdStatJob, JdbcTemplate jdbcTemplate) {
         this.jobLauncher = jobLauncher;
         this.job1 = job1;
         this.job2 = job2;
         this.videoAndAdStatJob = videoAndAdStatJob;
-//        this.taskExecutor = taskExecutor;
+        this.taskExecutor = taskExecutor;
         this.jdbcTemplate = jdbcTemplate;
     }
 
